@@ -159,4 +159,241 @@
             font-family: 'VT323', monospace;
             font-size: 1.8rem;
             cursor: pointer;
-            box-shadow: 0
+            box-shadow: 0 4px 0 #311a02;
+            text-shadow: 2px 2px 0 #000;
+            transition: transform 0.1s;
+        }
+
+        .stardew-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0 #311a02;
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        /* Fotoğraf Izgarası */
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .photo-card {
+            background: #fff;
+            border: 4px solid #4a2a06;
+            padding: 10px;
+            box-shadow: 0 6px 0 rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .photo-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border: 2px solid #4a2a06;
+        }
+
+        .download-btn {
+            font-size: 1.3rem;
+            padding: 4px 10px;
+            background-color: #5c8e32;
+            border: 2px solid #4a2a06;
+            color: white;
+            cursor: pointer;
+            width: 100%;
+            font-family: 'VT323', monospace;
+            text-shadow: 1px 1px 0 #000;
+        }
+
+        /* --- RESPONSIVE TASARIM (MOBİL UYUMLULUK) --- */
+        @media (max-width: 600px) {
+            header h1 { font-size: 3rem; }
+            header p { font-size: 1.5rem; }
+            .section-title { font-size: 2.2rem; }
+            
+            .stardew-box {
+                flex-direction: column;
+                text-align: center;
+            }
+            .portrait-area {
+                width: 80px;
+                height: 80px;
+            }
+            .dialog-text h3 { font-size: 1.8rem; }
+            .dialog-text p { font-size: 1.3rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Mutlu Yıllar Sahra!</h1>
+        <p>Pelican Kasabası sakinlerinden sana bir mesaj var... 🎂🌾</p>
+    </header>
+
+    <div class="container">
+
+        <h2 class="section-title">Kasaba Günlükleri</h2>
+
+        <div id="notes-container"></div>
+
+        <div class="gallery-section">
+            <h2 class="section-title" style="color: #4a2a06; text-shadow: none; margin-top: 0;">Fotoğraf Anıları</h2>
+            <p style="font-size: 1.5rem; margin-bottom: 20px;">Bugünden kalan güzel anıları buraya yükleyebilir ve indirebilirsiniz!</p>
+            
+            <label for="file-input" class="stardew-btn">Fotoğraf Seç / Yükle 📸</label>
+            <input type="file" id="file-input" accept="image/*" multiple>
+
+            <div class="photo-grid" id="photo-grid">
+                </div>
+        </div>
+
+    </div>
+
+    <script>
+        /* --- ARKADAŞ LİSTESİ VE NOTLARI ---
+           Buraya istediğiniz kadar arkadaş ekleyebilirsiniz. 
+           Eğer elinizde fotoğraf linki yoksa görsel kısmını "" bırakın, otomatik "Görsel" yazacaktır.
+        -------------------------------------------------- */
+        const arkadaslar = [
+            { isim: "Ahmet", gorsel: "", mesaj: "Doğum günün kutlu olsun Sahra! Yeni yaşın sana Stardew Valley'deki en verimli hasatları getirsin!" },
+            { isim: "Ayşe", gorsel: "", mesaj: "Mutlu yıllar Sahra! Yıldızçiğdemi Festivali'nin en parlak yıldızı sensin. İyi ki doğdun!" },
+            { isim: "Mehmet", gorsel: "", mesaj: "İyi ki doğdun Sahra! Umarım yeni yaşında Pierre'in dükkanındaki tüm tohumlar senin olur!" },
+            { isim: "Fatma", gorsel: "", mesaj: "Yeni yaşın kutlu olsun! Madenlerde her zaman merdiven bulduğun, şanslı bir yıl dilerim." },
+            { isim: "Can", gorsel: "", mesaj: "Mutlu yıllar! Bu yıl seran her zaman dolu, ekinlerin hep altın kalitede olsun." },
+            { isim: "Zeynep", gorsel: "", mesaj: "Sahra doğum günün kutlu olsun! Kasabanın en sevilen çiftçisi, iyi ki varsın!" },
+            { isim: "Ali", gorsel: "", mesaj: "Doğum günün kutlu olsun! Krobus ile sıkı dost olduğun harika bir yaş dilerim." },
+            { isim: "Elif", gorsel: "", mesaj: "Nice mutlu senelere Sahra! Bugün festival günü, senin günün! Eğlenmene bak." },
+            { isim: "Burak", gorsel: "", mesaj: "İyi ki doğdun! Junimolar bu yıl senin için çalışsın, her şey gönlünce olsun." },
+            { isim: "Ece", gorsel: "", mesaj: "Yeni yaşın kutlu olsun Sahra. Kasabamıza neşe katıyorsun, iyi ki bizimlesin." },
+            { isim: "Deniz", gorsel: "", mesaj: "Mutlu yıllar! Deniz kabukları ve değerli taşlar bu yıl hep senin sepetine dolsun." },
+            { isim: "Selin", gorsel: "", mesaj: "Doğum günün kutlu olsun! Marlon amca madenlerde sana hep en iyi kılıçları versin!" },
+            { isim: "Gökhan", gorsel: "", mesaj: "Nice yaşlara Sahra! Çiftliğinde bol bol ördek tüyü ve tavşan ayağı bulman dileğiyle." },
+            { isim: "Merve", gorsel: "", mesaj: "İyi ki doğdun canım! Yeni yaşında şansın ve mutluluğun hep en yüksek seviyede olsun." },
+            { isim: "Okan", gorsel: "", mesaj: "Mutlu yıllar! Bu sene büyükbabanın hayaleti çiftliğini ziyaret ettiğinde 4 mum birden yaksın!" },
+            { isim: "Büşra", gorsel: "", mesaj: "Doğum günün kutlu olsun Sahra! Kasabanın kalbi sensin, iyi ki doğdun." },
+            { isim: "Hakan", gorsel: "", mesaj: "Yeni yaşın mübarek olsun çiftçi Sahra! Ağaçlarından bol bol akçaağaç şurubu aksın." },
+            { isim: "Gamze", gorsel: "", mesaj: "Nice mutlu, sağlıklı ve oyun dolu senelere! Her günün şanslı gün olsun." },
+            { isim: "Yiğit", gorsel: "", mesaj: "İyi ki doğdun! Linus ile doğada harika tarifler keşfedeceğin bir yıl dilerim." },
+            { isim: "Gizem", gorsel: "", mesaj: "Doğum günün kutlu olsun Sahra! 20 arkadaşın olarak seni çok seviyoruz, iyi ki varsın!" }
+        ];
+
+        /* --- NOTLARI HTML İÇİNE OTOMATİK YAZDIRMA --- */
+        const notesContainer = document.getElementById('notes-container');
+
+        arkadaslar.forEach(arkadas => {
+            // Ana konteyner
+            const dialogContainer = document.createElement('div');
+            dialogContainer.className = 'dialog-container';
+
+            // İç Stardew Kutusu
+            const stardewBox = document.createElement('div');
+            stardewBox.className = 'stardew-box';
+
+            // Avatar Alanı
+            const portraitArea = document.createElement('div');
+            portraitArea.className = 'portrait-area';
+            if (arkadas.gorsel !== "") {
+                const img = document.createElement('img');
+                img.src = arkadas.gorsel;
+                img.alt = arkadas.isim;
+                portraitArea.appendChild(img);
+            } else {
+                const span = document.createElement('span');
+                span.innerText = "Görsel";
+                portraitArea.appendChild(span);
+            }
+
+            // Yazı Alanı
+            const dialogText = document.createElement('div');
+            dialogText.className = 'dialog-text';
+
+            const h3 = document.createElement('h3');
+            h3.innerText = arkadas.isim;
+
+            const p = document.createElement('p');
+            p.innerText = arkadas.mesaj;
+
+            // Yapıyı birleştirme
+            dialogText.appendChild(h3);
+            dialogText.appendChild(p);
+            stardewBox.appendChild(portraitArea);
+            stardewBox.appendChild(dialogText);
+            dialogContainer.appendChild(stardewBox);
+
+            notesContainer.appendChild(dialogContainer);
+        });
+
+
+        /* --- AŞAĞI KAYDIRDIKÇA AÇILAN ANİMASYON (Intersection Observer) --- */
+        const dialogs = document.querySelectorAll('.dialog-container');
+
+        const observerOptions = {
+            root: null,
+            threshold: 0.1, // Çok fazla kutu olduğu için ekrana daha rahat girmesi adına eşiği düşürdük
+            rootMargin: "0px 0px -40px 0px"
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        dialogs.forEach(dialog => {
+            observer.observe(dialog);
+        });
+
+
+        /* --- FOTOĞRAF YÜKLEME VE İNDİRME SİSTEMİ --- */
+        const fileInput = document.getElementById('file-input');
+        const photoGrid = document.getElementById('photo-grid');
+
+        fileInput.addEventListener('change', function(event) {
+            const files = event.target.files;
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                if (!file.type.match('image.*')) continue;
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const card = document.createElement('div');
+                    card.className = 'photo-card';
+
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+
+                    const downloadBtn = document.createElement('button');
+                    downloadBtn.className = 'download-btn';
+                    downloadBtn.innerText = 'İndir 💾';
+                    
+                    downloadBtn.addEventListener('click', function() {
+                        const link = document.createElement('a');
+                        link.href = e.target.result;
+                        link.download = `sahra-dogum-gunu-${Date.now()}.png`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    });
+
+                    card.appendChild(img);
+                    card.appendChild(downloadBtn);
+                    photoGrid.appendChild(card);
+                };
+                reader.readAsDataURL(file);
+            }
+            fileInput.value = '';
+        });
+    </script>
+</body>
+</html>
