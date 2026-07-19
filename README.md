@@ -1,0 +1,1 @@
+# allah_bir_ve_tek_olandir
