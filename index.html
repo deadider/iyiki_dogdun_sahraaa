@@ -1,1 +1,371 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mutlu Yıllar Sahra! 🌾</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- GENEL AYARLAR & STİLLER --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
+        body {
+            background-color: #5c8e32; /* Stardew Valley Çim Yeşili */
+            background-image: 
+                linear-gradient(rgba(0, 0, 0, 0.15) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.15) 2px, transparent 2px);
+            background-size: 4px 4px; /* Piksel dokusu efekti */
+            font-family: 'VT323', monospace;
+            color: #4a2a06;
+            overflow-x: hidden;
+            padding-bottom: 50px;
+        }
+
+        /* --- BAŞLIK ALANI (HERO) --- */
+        header {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(to bottom, #2c5c84, #5c8e32); /* Gece gökyüzünden çimene geçiş */
+            border-bottom: 8px solid #f3bc64;
+            box-shadow: 0 8px 0 #8f5613;
+            color: #fff;
+            text-shadow: 3px 3px 0px #000;
+        }
+
+        header h1 {
+            font-size: 4.5rem;
+            margin-bottom: 10px;
+            animation: bounce 2s infinite alternate;
+        }
+
+        header p {
+            font-size: 2rem;
+            color: #f3bc64;
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+
+        /* --- ANA İÇERİK ALANI --- */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 3rem;
+            margin: 40px 0 20px 0;
+            color: #fff;
+            text-shadow: 3px 3px 0px #3c2104;
+        }
+
+        /* --- STARDEW DIALOG KUTUSU (NOTLAR) --- */
+        .dialog-container {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease-out;
+            margin-bottom: 40px;
+        }
+
+        /* Kaydırınca görünür olma sınıfı (JS ile eklenecek) */
+        .dialog-container.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .stardew-box {
+            background-color: #f1d399; /* Klasik Stardew diyalog rengi */
+            border: 6px solid #f3bc64;
+            outline: 6px solid #4a2a06;
+            box-shadow: inset -4px -4px 0px #b5894b, inset 4px 4px 0px #fff, 0 10px 0px rgba(0,0,0,0.2);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            image-rendering: pixelated;
+        }
+
+        /* Avatar / Portre Alanı */
+        .portrait-area {
+            width: 100px;
+            height: 100px;
+            background-color: #9c7c4c;
+            border: 4px solid #4a2a06;
+            box-shadow: inset 4px 4px 0px rgba(0,0,0,0.3);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f1d399;
+            font-size: 1.2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .portrait-area img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Diyalog Metin Alanı */
+        .dialog-text {
+            flex-grow: 1;
+        }
+
+        .dialog-text h3 {
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+            color: #4a2a06;
+            border-bottom: 2px dashed #b5894b;
+        }
+
+        .dialog-text p {
+            font-size: 1.6rem;
+            line-height: 1.3;
+            color: #311a02;
+        }
+
+        /* --- FOTOĞRAF DUVARI VE GALERİ --- */
+        .gallery-section {
+            background-color: #f1d399;
+            border: 6px solid #f3bc64;
+            outline: 6px solid #4a2a06;
+            box-shadow: inset -4px -4px 0px #b5894b, inset 4px 4px 0px #fff;
+            padding: 30px 20px;
+            text-align: center;
+            margin-top: 60px;
+        }
+
+        /* Retro Buton Tasarımı */
+        .stardew-btn {
+            display: inline-block;
+            background-color: #b5894b;
+            color: #fff;
+            border: 4px solid #4a2a06;
+            padding: 10px 20px;
+            font-family: 'VT323', monospace;
+            font-size: 1.8rem;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #311a02;
+            text-shadow: 2px 2px 0 #000;
+            transition: transform 0.1s;
+        }
+
+        .stardew-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0 #311a02;
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        /* Fotoğraf Izgarası */
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .photo-card {
+            background: #fff;
+            border: 4px solid #4a2a06;
+            padding: 10px;
+            box-shadow: 0 6px 0 rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .photo-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border: 2px solid #4a2a06;
+        }
+
+        .download-btn {
+            font-size: 1.3rem;
+            padding: 4px 10px;
+            background-color: #5c8e32;
+            border: 2px solid #4a2a06;
+            color: white;
+            cursor: pointer;
+            width: 100%;
+            font-family: 'VT323', monospace;
+            text-shadow: 1px 1px 0 #000;
+        }
+
+        /* --- RESPONSIVE TASARIM (MOBİL UYUMLULUK) --- */
+        @media (max-width: 600px) {
+            header h1 { font-size: 3rem; }
+            header p { font-size: 1.5rem; }
+            .section-title { font-size: 2.2rem; }
+            
+            .stardew-box {
+                flex-direction: column;
+                text-align: center;
+            }
+            .portrait-area {
+                width: 80px;
+                height: 80px;
+            }
+            .dialog-text h3 { font-size: 1.8rem; }
+            .dialog-text p { font-size: 1.3rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Mutlu Yıllar Sahra!</h1>
+        <p>Pelican Kasabası sakinlerinden sana bir mesaj var... 🎂🌾</p>
+    </header>
+
+    <div class="container">
+
+        <h2 class="section-title">Kasaba Günlükleri</h2>
+
+        <div class="dialog-container">
+            <div class="stardew-box">
+                <div class="portrait-area">
+                    <span>Görsel</span>
+                </div>
+                <div class="dialog-text">
+                    <h3>Arkadaş 1</h3>
+                    <p>Buraya örnek bir doğum günü mesajı gelecektir, paragraf şeklinde burası dolacak. Yeni yaşın sana Stardew Valley'deki en verimli hasatları, en şanslı maden günlerini getirsin Sahra! İyi ki doğdun!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="dialog-container">
+            <div class="stardew-box">
+                <div class="portrait-area">
+                    <span>Görsel</span>
+                </div>
+                <div class="dialog-text">
+                    <h3>Arkadaş 2</h3>
+                    <p>Buraya örnek bir doğum günü mesajı gelecektir, paragraf şeklinde burası dolacak. Yıldızçiğdemi Festivali'nin en parlak yıldızı sensin! Nice mutlu, huzurlu ve bol oyunlu senelere arkadaşım.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="dialog-container">
+            <div class="stardew-box">
+                <div class="portrait-area">
+                    <span>Görsel</span>
+                </div>
+                <div class="dialog-text">
+                    <h3>Arkadaş 3</h3>
+                    <p>Buraya örnek bir doğum günü mesajı gelecektir, paragraf şeklinde burası dolacak. Doğum günün kutlu olsun Sahra! Umarım yeni yaşında tüm dileklerin gerçek olur ve Pierre'in dükkanındaki tüm tohumlar senin olur!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="gallery-section">
+            <h2 class="section-title" style="color: #4a2a06; text-shadow: none; margin-top: 0;">Fotoğraf Anıları</h2>
+            <p style="font-size: 1.5rem; margin-bottom: 20px;">Bugünden kalan güzel anıları buraya yükleyebilir ve indirebilirsiniz!</p>
+            
+            <label for="file-input" class="stardew-btn">Fotoğraf Seç / Yükle 📸</label>
+            <input type="file" id="file-input" accept="image/*" multiple>
+
+            <div class="photo-grid" id="photo-grid">
+                </div>
+        </div>
+
+    </div>
+
+    <script>
+        /* --- AŞAĞI KAYDIRDIKÇA AÇILAN ANİMASYON (Intersection Observer) --- */
+        const dialogs = document.querySelectorAll('.dialog-container');
+
+        const observerOptions = {
+            root: null, // Tarayıcı pencerisini baz alır
+            threshold: 0.15, // Kutunun %15'i göründüğünde tetiklenir
+            rootMargin: "0px 0px -50px 0px" // Erken tetiklenmeyi önlemek için alt marj
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target); // Animasyon bir kere çalışsın diye izlemeyi bırakır
+                }
+            });
+        }, observerOptions);
+
+        dialogs.forEach(dialog => {
+            observer.observe(dialog);
+        });
+
+
+        /* --- FOTOĞRAF YÜKLEME VE İNDİRME SİSTEMİ (Tarayıcı Tabanlı) --- */
+        const fileInput = document.getElementById('file-input');
+        const photoGrid = document.getElementById('photo-grid');
+
+        fileInput.addEventListener('change', function(event) {
+            const files = event.target.files;
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                
+                // Sadece resim dosyalarını kabul et
+                if (!file.type.match('image.*')) continue;
+
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    // Fotoğraf Kartı Yapısı Oluşturma
+                    const card = document.createElement('div');
+                    card.className = 'photo-card';
+
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+
+                    const downloadBtn = document.createElement('button');
+                    downloadBtn.className = 'download-btn';
+                    downloadBtn.innerText = 'İndir 💾';
+                    
+                    // İndirme İşlevi
+                    downloadBtn.addEventListener('click', function() {
+                        const link = document.createElement('a');
+                        link.href = e.target.result;
+                        link.download = `sahra-dogum-gunu-${Date.now()}.png`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    });
+
+                    // Elemanları Karta Ekleme
+                    card.appendChild(img);
+                    card.appendChild(downloadBtn);
+                    
+                    // Kartı Galeri Izgarasına Ekleme
+                    photoGrid.appendChild(card);
+                };
+
+                // Dosyayı DataURL olarak oku
+                reader.readAsDataURL(file);
+            }
+            
+            // Aynı dosyayı tekrar yükleyebilmek için input değerini sıfırla
+            fileInput.value = '';
+        });
+    </script>
+</body>
+</html>
