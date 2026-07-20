@@ -8,225 +8,70 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
     <style>
         /* --- GENEL AYARLAR & STİLLER --- */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            background-color: #5c8e32; /* Stardew Valley Çim Yeşili */
-            background-image: 
-                linear-gradient(rgba(0, 0, 0, 0.15) 2px, transparent 2px),
-                linear-gradient(90deg, rgba(0, 0, 0, 0.15) 2px, transparent 2px);
-            background-size: 4px 4px; /* Piksel dokusu efekti */
+            background-color: #5c8e32;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.15) 2px, transparent 2px), linear-gradient(90deg, rgba(0, 0, 0, 0.15) 2px, transparent 2px);
+            background-size: 4px 4px;
             font-family: 'VT323', monospace;
             color: #4a2a06;
             overflow-x: hidden;
             padding-bottom: 50px;
         }
-
-        /* --- BAŞLIK ALANI (HERO) --- */
         header {
-            text-align: center;
-            padding: 60px 20px;
-            background: linear-gradient(to bottom, #2c5c84, #5c8e32); /* Gece gökyüzünden çimene geçiş */
-            border-bottom: 8px solid #f3bc64;
-            box-shadow: 0 8px 0 #8f5613;
-            color: #fff;
-            text-shadow: 3px 3px 0px #000;
+            text-align: center; padding: 60px 20px;
+            background: linear-gradient(to bottom, #2c5c84, #5c8e32);
+            border-bottom: 8px solid #f3bc64; box-shadow: 0 8px 0 #8f5613;
+            color: #fff; text-shadow: 3px 3px 0px #000;
         }
-
-        header h1 {
-            font-size: 4.5rem;
-            margin-bottom: 10px;
-            animation: bounce 2s infinite alternate;
-        }
-
-        header p {
-            font-size: 2rem;
-            color: #f3bc64;
-        }
-
-        @keyframes bounce {
-            from { transform: translateY(0); }
-            to { transform: translateY(-10px); }
-        }
-
-        /* --- ANA İÇERİK ALANI --- */
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .section-title {
-            text-align: center;
-            font-size: 3rem;
-            margin: 40px 0 20px 0;
-            color: #fff;
-            text-shadow: 3px 3px 0px #3c2104;
-        }
-
-        /* --- STARDEW DIALOG KUTUSU (NOTLAR) --- */
-        .dialog-container {
-            opacity: 0;
-            transform: translateY(50px);
-            transition: all 0.8s ease-out;
-            margin-bottom: 40px;
-        }
-
-        /* Kaydırınca görünür olma sınıfı (JS ile eklenecek) */
-        .dialog-container.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
+        header h1 { font-size: 4.5rem; margin-bottom: 10px; animation: bounce 2s infinite alternate; }
+        header p { font-size: 2rem; color: #f3bc64; }
+        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        .section-title { text-align: center; font-size: 3rem; margin: 40px 0 20px 0; color: #fff; text-shadow: 3px 3px 0px #3c2104; }
+        
+        /* DIALOG KUTULARI */
+        .dialog-container { opacity: 0; transform: translateY(50px); transition: all 0.8s ease-out; margin-bottom: 40px; }
+        .dialog-container.visible { opacity: 1; transform: translateY(0); }
         .stardew-box {
-            background-color: #f1d399; /* Klasik Stardew diyalog rengi */
-            border: 6px solid #f3bc64;
-            outline: 6px solid #4a2a06;
+            background-color: #f1d399; border: 6px solid #f3bc64; outline: 6px solid #4a2a06;
             box-shadow: inset -4px -4px 0px #b5894b, inset 4px 4px 0px #fff, 0 10px 0px rgba(0,0,0,0.2);
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            image-rendering: pixelated;
+            padding: 20px; display: flex; align-items: center; gap: 20px;
         }
-
-        /* Avatar / Portre Alanı */
         .portrait-area {
-            width: 100px;
-            height: 100px;
-            background-color: #9c7c4c;
-            border: 4px solid #4a2a06;
-            box-shadow: inset 4px 4px 0px rgba(0,0,0,0.3);
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #f1d399;
-            font-size: 1.2rem;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
+            width: 100px; height: 100px; background-color: #9c7c4c; border: 4px solid #4a2a06;
+            box-shadow: inset 4px 4px 0px rgba(0,0,0,0.3); flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; color: #f1d399; font-size: 1.2rem;
         }
+        .dialog-text h3 { font-size: 2.2rem; margin-bottom: 5px; color: #4a2a06; border-bottom: 2px dashed #b5894b; }
+        .dialog-text p { font-size: 1.6rem; line-height: 1.3; color: #311a02; }
 
-        .portrait-area img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* Diyalog Metin Alanı */
-        .dialog-text {
-            flex-grow: 1;
-        }
-
-        .dialog-text h3 {
-            font-size: 2.2rem;
-            margin-bottom: 5px;
-            color: #4a2a06;
-            border-bottom: 2px dashed #b5894b;
-        }
-
-        .dialog-text p {
-            font-size: 1.6rem;
-            line-height: 1.3;
-            color: #311a02;
-        }
-
-        /* --- FOTOĞRAF DUVARI VE GALERİ --- */
+        /* GALERİ VE YÜKLEME DURUMU */
         .gallery-section {
-            background-color: #f1d399;
-            border: 6px solid #f3bc64;
-            outline: 6px solid #4a2a06;
-            box-shadow: inset -4px -4px 0px #b5894b, inset 4px 4px 0px #fff;
-            padding: 30px 20px;
-            text-align: center;
-            margin-top: 60px;
+            background-color: #f1d399; border: 6px solid #f3bc64; outline: 6px solid #4a2a06;
+            box-shadow: inset -4px -4px 0px #b5894b, inset 4px 4px 0px #fff; padding: 30px 20px; text-align: center; margin-top: 60px;
         }
-
-        /* Retro Buton Tasarımı */
         .stardew-btn {
-            display: inline-block;
-            background-color: #b5894b;
-            color: #fff;
-            border: 4px solid #4a2a06;
-            padding: 10px 20px;
-            font-family: 'VT323', monospace;
-            font-size: 1.8rem;
-            cursor: pointer;
-            box-shadow: 0 4px 0 #311a02;
-            text-shadow: 2px 2px 0 #000;
-            transition: transform 0.1s;
+            display: inline-block; background-color: #b5894b; color: #fff; border: 4px solid #4a2a06;
+            padding: 10px 20px; font-family: 'VT323', monospace; font-size: 1.8rem; cursor: pointer;
+            box-shadow: 0 4px 0 #311a02; text-shadow: 2px 2px 0 #000;
         }
+        #file-input { display: none; }
+        .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; margin-top: 30px; }
+        .photo-card { background: #fff; border: 4px solid #4a2a06; padding: 10px; box-shadow: 0 6px 0 rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .photo-card img { width: 100%; height: 150px; object-fit: cover; border: 2px solid #4a2a06; }
+        .download-btn { font-size: 1.3rem; padding: 4px 10px; background-color: #5c8e32; border: 2px solid #4a2a06; color: white; cursor: pointer; width: 100%; font-family: 'VT323', monospace; }
+        
+        #loading-txt { font-size: 1.5rem; color: #8f5613; display: none; margin-top: 10px; }
 
-        .stardew-btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 0px 0 #311a02;
-        }
-
-        #file-input {
-            display: none;
-        }
-
-        /* Fotoğraf Izgarası */
-        .photo-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
-        }
-
-        .photo-card {
-            background: #fff;
-            border: 4px solid #4a2a06;
-            padding: 10px;
-            box-shadow: 0 6px 0 rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .photo-card img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border: 2px solid #4a2a06;
-        }
-
-        .download-btn {
-            font-size: 1.3rem;
-            padding: 4px 10px;
-            background-color: #5c8e32;
-            border: 2px solid #4a2a06;
-            color: white;
-            cursor: pointer;
-            width: 100%;
-            font-family: 'VT323', monospace;
-            text-shadow: 1px 1px 0 #000;
-        }
-
-        /* --- RESPONSIVE TASARIM (MOBİL UYUMLULUK) --- */
         @media (max-width: 600px) {
-            header h1 { font-size: 3rem; }
-            header p { font-size: 1.5rem; }
-            .section-title { font-size: 2.2rem; }
-            
-            .stardew-box {
-                flex-direction: column;
-                text-align: center;
-            }
-            .portrait-area {
-                width: 80px;
-                height: 80px;
-            }
-            .dialog-text h3 { font-size: 1.8rem; }
-            .dialog-text p { font-size: 1.3rem; }
+            header h1 { font-size: 3rem; } header p { font-size: 1.5rem; }
+            .stardew-box { flex-direction: column; text-align: center; }
         }
     </style>
 </head>
@@ -238,29 +83,39 @@
     </header>
 
     <div class="container">
-
         <h2 class="section-title">Kasaba Günlükleri</h2>
-
         <div id="notes-container"></div>
 
         <div class="gallery-section">
-            <h2 class="section-title" style="color: #4a2a06; text-shadow: none; margin-top: 0;">Fotoğraf Anıları</h2>
-            <p style="font-size: 1.5rem; margin-bottom: 20px;">Bugünden kalan güzel anıları buraya yükleyebilir ve indirebilirsiniz!</p>
+            <h2 class="section-title" style="color: #4a2a06; text-shadow: none; margin-top: 0;">Ortak Fotoğraf Anıları</h2>
+            <p style="font-size: 1.5rem; margin-bottom: 20px;">Buraya yüklenen fotoğrafları herkes görebilir ve indirebilir!</p>
             
             <label for="file-input" class="stardew-btn">Fotoğraf Seç / Yükle 📸</label>
-            <input type="file" id="file-input" accept="image/*" multiple>
+            <input type="file" id="file-input" accept="image/*">
+            <div id="loading-txt">Fotoğraf veritabanına işleniyor, lütfen bekleyin... 🌾</div>
 
-            <div class="photo-grid" id="photo-grid">
-                </div>
+            <div class="photo-grid" id="photo-grid"></div>
         </div>
-
     </div>
 
     <script>
-        /* --- ARKADAŞ LİSTESİ VE NOTLARI ---
-           Buraya istediğiniz kadar arkadaş ekleyebilirsiniz. 
-           Eğer elinizde fotoğraf linki yoksa görsel kısmını "" bırakın, otomatik "Görsel" yazacaktır.
+        /* --- 1. FIREBASE BAĞLANTI AYARLARI ---
+           Firebase Realtime Database ayarlarınızı buraya yazın. (Storage alanına gerek yoktur)
         -------------------------------------------------- */
+        const firebaseConfig = {
+            apiKey: "BURAYA_KENDİ_API_ANAHTARINIZI_YAZIN",
+            authDomain: "PROJE-ADINIZ.firebaseapp.com",
+            databaseURL: "https://PROJE-ADINIZ-default-rtdb.firebaseio.com",
+            projectId: "PROJE-ADINIZ",
+            messagingSenderId: "GÖNDERİCİ_ID",
+            appId: "APP_ID"
+        };
+        
+        // Firebase Başlatma
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        /* --- 2. ARKADAŞ LİSTESİ VE NOTLARI (20 Kişi) --- */
         const arkadaslar = [
             { isim: "Ahmet", gorsel: "", mesaj: "Doğum günün kutlu olsun Sahra! Yeni yaşın sana Stardew Valley'deki en verimli hasatları getirsin!" },
             { isim: "Ayşe", gorsel: "", mesaj: "Mutlu yıllar Sahra! Yıldızçiğdemi Festivali'nin en parlak yıldızı sensin. İyi ki doğdun!" },
@@ -284,116 +139,93 @@
             { isim: "Gizem", gorsel: "", mesaj: "Doğum günün kutlu olsun Sahra! 20 arkadaşın olarak seni çok seviyoruz, iyi ki varsın!" }
         ];
 
-        /* --- NOTLARI HTML İÇİNE OTOMATİK YAZDIRMA --- */
         const notesContainer = document.getElementById('notes-container');
-
         arkadaslar.forEach(arkadas => {
-            // Ana konteyner
-            const dialogContainer = document.createElement('div');
-            dialogContainer.className = 'dialog-container';
-
-            // İç Stardew Kutusu
-            const stardewBox = document.createElement('div');
-            stardewBox.className = 'stardew-box';
-
-            // Avatar Alanı
-            const portraitArea = document.createElement('div');
-            portraitArea.className = 'portrait-area';
-            if (arkadas.gorsel !== "") {
-                const img = document.createElement('img');
-                img.src = arkadas.gorsel;
-                img.alt = arkadas.isim;
-                portraitArea.appendChild(img);
-            } else {
-                const span = document.createElement('span');
-                span.innerText = "Görsel";
-                portraitArea.appendChild(span);
-            }
-
-            // Yazı Alanı
-            const dialogText = document.createElement('div');
-            dialogText.className = 'dialog-text';
-
-            const h3 = document.createElement('h3');
-            h3.innerText = arkadas.isim;
-
-            const p = document.createElement('p');
-            p.innerText = arkadas.mesaj;
-
-            // Yapıyı birleştirme
-            dialogText.appendChild(h3);
-            dialogText.appendChild(p);
-            stardewBox.appendChild(portraitArea);
-            stardewBox.appendChild(dialogText);
-            dialogContainer.appendChild(stardewBox);
-
-            notesContainer.appendChild(dialogContainer);
+            const dialogContainer = document.createElement('div'); dialogContainer.className = 'dialog-container';
+            const stardewBox = document.createElement('div'); stardewBox.className = 'stardew-box';
+            const portraitArea = document.createElement('div'); portraitArea.className = 'portrait-area';
+            portraitArea.innerHTML = '<span>Görsel</span>';
+            const dialogText = document.createElement('div'); dialogText.className = 'dialog-text';
+            dialogText.innerHTML = `<h3>${arkadas.isim}</h3><p>${arkadas.mesaj}</p>`;
+            stardewBox.appendChild(portraitArea); stardewBox.appendChild(dialogText);
+            dialogContainer.appendChild(stardewBox); notesContainer.appendChild(dialogContainer);
         });
 
+        /* --- INTERSECTION OBSERVER (Animasyon) --- */
+        setTimeout(() => {
+            const dialogs = document.querySelectorAll('.dialog-container');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); } });
+            }, { threshold: 0.1 });
+            dialogs.forEach(dialog => observer.observe(dialog));
+        }, 100);
 
-        /* --- AŞAĞI KAYDIRDIKÇA AÇILAN ANİMASYON (Intersection Observer) --- */
-        const dialogs = document.querySelectorAll('.dialog-container');
-
-        const observerOptions = {
-            root: null,
-            threshold: 0.1, // Çok fazla kutu olduğu için ekrana daha rahat girmesi adına eşiği düşürdük
-            rootMargin: "0px 0px -40px 0px"
-        };
-
-        const observer = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, observerOptions);
-
-        dialogs.forEach(dialog => {
-            observer.observe(dialog);
-        });
-
-
-        /* --- FOTOĞRAF YÜKLEME VE İNDİRME SİSTEMİ --- */
+        /* --- 3. DOĞRUDAN REALTIME DATABASE KULLANAN FOTOĞRAF SİSTEMİ --- */
         const fileInput = document.getElementById('file-input');
         const photoGrid = document.getElementById('photo-grid');
+        const loadingTxt = document.getElementById('loading-txt');
 
-        fileInput.addEventListener('change', function(event) {
-            const files = event.target.files;
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file || !file.type.match('image.*')) return;
 
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                if (!file.type.match('image.*')) continue;
-
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const card = document.createElement('div');
-                    card.className = 'photo-card';
-
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-
-                    const downloadBtn = document.createElement('button');
-                    downloadBtn.className = 'download-btn';
-                    downloadBtn.innerText = 'İndir 💾';
-                    
-                    downloadBtn.addEventListener('click', function() {
-                        const link = document.createElement('a');
-                        link.href = e.target.result;
-                        link.download = `sahra-dogum-gunu-${Date.now()}.png`;
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                    });
-
-                    card.appendChild(img);
-                    card.appendChild(downloadBtn);
-                    photoGrid.appendChild(card);
-                };
-                reader.readAsDataURL(file);
+            // Fotoğraf boyutunu kontrol et (Ücretsiz veritabanı sınırını aşmamak için maksimum 2.5 MB önerilir)
+            if (file.size > 2.5 * 1024 * 1024) {
+                alert("Fotoğraf boyutu çok büyük! Veritabanı sağlığı için lütfen 2.5MB'tan daha küçük bir görsel seçin.");
+                return;
             }
-            fileInput.value = '';
+
+            loadingTxt.style.display = "block";
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const base64Image = event.target.result; // Fotoğraf artık uzun bir metin dizisi oldu
+
+                // Doğrudan Realtime Database'e metin olarak kaydediyoruz
+                database.ref('galeri').push({
+                    imageUrl: base64Image,
+                    timestamp: Date.now()
+                }).then(() => {
+                    loadingTxt.style.display = "none";
+                    fileInput.value = '';
+                }).catch(error => {
+                    console.error("Yükleme hatası:", error);
+                    alert("Yüklenirken bir hata oluştu! Lütfen veritabanı kurallarınızı (Rules) kontrol edin.");
+                    loadingTxt.style.display = "none";
+                });
+            };
+            reader.readAsDataURL(file);
         });
+
+        // Veri tabanını canlı dinleme (Biri eklediğinde anında herkesin ekranına düşer)
+        database.ref('galeri').on('child_added', function(snapshot) {
+            const data = snapshot.val();
+            ekranaFotoEkle(data.imageUrl);
+        });
+
+        function ekranaFotoEkle(url) {
+            const card = document.createElement('div');
+            card.className = 'photo-card';
+
+            const img = document.createElement('img');
+            img.src = url; // Base64 metnini doğrudan kaynak olarak kullanabiliyoruz
+
+            const downloadBtn = document.createElement('button');
+            downloadBtn.className = 'download-btn';
+            downloadBtn.innerText = 'İndir 💾';
+            
+            downloadBtn.addEventListener('click', function() {
+                // Base64 formatındaki resmi doğrudan indirme tetikleyicisi
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `sahra-ani-${Date.now()}.png`;
+                link.click();
+            });
+
+            card.appendChild(img);
+            card.appendChild(downloadBtn);
+            photoGrid.insertBefore(card, photoGrid.firstChild); // En yeni resmi en üste ekler
+        }
     </script>
 </body>
 </html>
