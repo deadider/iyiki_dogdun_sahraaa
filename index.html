@@ -3,230 +3,1084 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mutlu Yıllar Sahra! 🌾</title>
+    <title>Sahra'nın Büyülü Yıldız Kavanozu ✨</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-    
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=VT323&family=Caveat:wght@600&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
 
     <style>
-        /* --- GENEL AYARLAR & STİLLER --- */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        /* ==========================================================================
+           1. GENEL STİLLER VE SİNEMATİK DÜZEN
+           ========================================================================== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            background-color: #5c8e32;
-            background-image: linear-gradient(rgba(0, 0, 0, 0.15) 2px, transparent 2px), linear-gradient(90deg, rgba(0, 0, 0, 0.15) 2px, transparent 2px);
-            background-size: 4px 4px;
+            background-color: #0d0614;
+            color: #f3e8ff;
+            font-family: 'Quicksand', sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* SCROLLBAR TASARIMI */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0d0614;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #6b21a8;
+            border-radius: 5px;
+        }
+
+        /* ==========================================================================
+           2. SİNEMATİK KAYDIRMA & FALCI ÇADIRI (PARALLAX BÖLÜMÜ)
+           ========================================================================== */
+        .cinematic-container {
+            position: relative;
+            width: 100%;
+        }
+
+        /* Sahne 1: Gece Gökyüzü */
+        .sky-section {
+            height: 100vh;
+            background: linear-gradient(to bottom, #05020a, #1a0b2e, #2d124d);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sky-title {
+            font-family: 'Cinzel', serif;
+            font-size: 3.5rem;
+            color: #ebd5ff;
+            text-shadow: 0 0 20px #a855f7, 0 0 40px #7e22ce;
+            z-index: 2;
+            animation: pulseTitle 3s infinite alternate;
+        }
+
+        .scroll-down-hint {
+            position: absolute;
+            bottom: 30px;
+            font-size: 1.2rem;
+            color: #d8b4fe;
+            animation: bounce 2s infinite;
+            z-index: 2;
+        }
+
+        /* Sahne 2: Büyülü Ağaçlar ve Çadır Yaklaşımı */
+        .tent-approach-section {
+            min-height: 120vh;
+            background: linear-gradient(to bottom, #2d124d, #140524);
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* SVG Soru/Ağaç Silüetleri (CSS/SVG Çizim) */
+        .tree-left, .tree-right {
+            position: absolute;
+            top: 0;
+            width: 40%;
+            height: 100%;
+            background-size: cover;
+            transition: transform 0.5s ease-out;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .tree-left {
+            left: 0;
+            background: linear-gradient(90deg, rgba(13,6,20,1) 0%, rgba(13,6,20,0.8) 60%, transparent 100%);
+            border-right: 2px solid rgba(168, 85, 247, 0.2);
+            /* BURAYA ÖZEL AĞAÇ RESMİ/SVG'Sİ EKLEYEBİLİRSİNİZ: background-image: url('agac-sol.png'); */
+        }
+
+        .tree-right {
+            right: 0;
+            background: linear-gradient(-90deg, rgba(13,6,20,1) 0%, rgba(13,6,20,0.8) 60%, transparent 100%);
+            border-left: 2px solid rgba(168, 85, 247, 0.2);
+            /* BURAYA ÖZEL AĞAÇ RESMİ/SVG'Sİ EKLEYEBİLİRSİNİZ: background-image: url('agac-sag.png'); */
+        }
+
+        .tent-outer {
+            width: 320px;
+            height: 380px;
+            background: radial-gradient(circle, #581c87 0%, #2e1065 100%);
+            clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+            border-bottom: 10px solid #a855f7;
+            box-shadow: 0 0 50px rgba(168, 85, 247, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s;
+            /* BURAYA ÇADIR DIŞ RESMİ EKLEYEBİLİRSİNİZ: background: url('cadir-dis.png') no-repeat center/cover; */
+        }
+
+        .tent-outer:hover {
+            transform: scale(1.03);
+        }
+
+        .tent-door-glow {
+            width: 80px;
+            height: 140px;
+            background: #fef08a;
+            box-shadow: 0 0 40px #facc15;
+            border-radius: 40px 40px 0 0;
+            opacity: 0.8;
+            animation: glowPulse 2s infinite alternate;
+        }
+
+        /* Sahne 3: Çadırın İçi ve Masa */
+        .tent-inside-section {
+            min-height: 100vh;
+            background: radial-gradient(circle, #2e1065 0%, #0d0614 90%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 40px 20px;
+            border-top: 2px solid #581c87;
+        }
+
+        /* Pencere ve Yıldız Tut Butonu */
+        .window-area {
+            position: absolute;
+            top: 40px;
+            right: 5%;
+            width: 140px;
+            height: 180px;
+            background: #1e1b4b;
+            border: 6px solid #4c1d95;
+            border-radius: 70px 70px 10px 10px;
+            box-shadow: inset 0 0 20px #000, 0 0 15px rgba(168, 85, 247, 0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 10px;
+            /* BURAYA PENCERE RESMİ/GECE MANZARASI EKLEYEBİLİRSİNİZ: background: url('pencere.png'); */
+        }
+
+        .window-stars {
+            font-size: 1.5rem;
+            animation: spin 12s linear infinite;
+        }
+
+        .star-hold-container {
+            margin-top: 10px;
+        }
+
+        .star-hold-btn {
+            background: linear-gradient(135deg, #a855f7, #6b21a8);
+            color: #fff;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            box-shadow: 0 0 10px #a855f7;
+            transition: all 0.3s;
+        }
+
+        .star-hold-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #c084fc;
+        }
+
+        /* Tarih Geçtiğinde Görünecek Stil */
+        .star-hold-btn.expired {
+            text-decoration: line-through;
+            background: #475569;
+            box-shadow: none;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .expired-msg {
+            font-size: 0.85rem;
+            color: #fef08a;
+            margin-top: 6px;
+            font-weight: bold;
+            text-shadow: 0 0 5px #eab308;
+            display: none;
+        }
+
+        /* MASA VE YILDIZ KAVANOZU */
+        .fortune-table {
+            width: 340px;
+            height: 180px;
+            background: linear-gradient(180deg, #422006 0%, #1c0a00 100%);
+            border-radius: 170px 170px 20px 20px;
+            border-top: 8px solid #713f12;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.9), inset 0 5px 15px rgba(255,255,255,0.1);
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            margin-top: 120px;
+            /* BURAYA MASA RESMİ EKLEYEBİLİRSİNİZ: background: url('masa.png') no-repeat center/cover; */
+        }
+
+        .jar-wrapper {
+            position: absolute;
+            top: -110px;
+            cursor: pointer;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .jar-wrapper:hover {
+            transform: scale(1.05);
+        }
+
+        .jar-lid {
+            width: 70px;
+            height: 20px;
+            background: linear-gradient(90deg, #ca8a04, #fef08a, #ca8a04);
+            border-radius: 5px;
+            margin: 0 auto;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            transition: transform 0.5s ease;
+        }
+
+        /* Kapak açılma animasyonu */
+        .jar-wrapper.open .jar-lid {
+            transform: translateY(-35px) rotate(-15deg);
+        }
+
+        .jar-body {
+            width: 110px;
+            height: 140px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(4px);
+            border: 4px solid rgba(255, 255, 255, 0.5);
+            border-radius: 15px 15px 35px 35px;
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.6), inset 0 0 15px rgba(255,255,255,0.3);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .jar-mini-stars {
+            font-size: 1.2rem;
+            animation: floatGlow 2s infinite alternate;
+        }
+
+        /* ==========================================================================
+           3. POP-UP / ŞİFRE EKRANI (KAVANOZ KİLİDİ)
+           ========================================================================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(5, 2, 10, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .pwd-box {
+            background: linear-gradient(135deg, #2e1065, #1e1b4b);
+            border: 3px solid #a855f7;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 380px;
+            width: 90%;
+            box-shadow: 0 0 40px #7e22ce;
+            transform: scale(0.8);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .modal-overlay.active .pwd-box {
+            transform: scale(1);
+        }
+
+        .pwd-box h3 {
+            font-family: 'Cinzel', serif;
+            color: #fef08a;
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+
+        .pwd-box p {
+            font-size: 0.95rem;
+            color: #d8b4fe;
+            margin-bottom: 20px;
+        }
+
+        .pwd-input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 2px solid #a855f7;
+            background: #0d0614;
+            color: #fff;
+            font-size: 1.1rem;
+            text-align: center;
+            outline: none;
+            margin-bottom: 15px;
+        }
+
+        .pwd-btn {
+            background: #a855f7;
+            color: #fff;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .pwd-btn:hover {
+            background: #c084fc;
+        }
+
+        .pwd-error {
+            color: #f87171;
+            font-size: 0.85rem;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* ==========================================================================
+           4. KAVANOZUN İÇİ ARAYÜZÜ (YÜZEN YILDIZLAR)
+           ========================================================================== */
+        .inside-jar-view {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle, #3b0764 0%, #090314 100%);
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.8s ease-in-out;
+            transform: scale(1.2);
+        }
+
+        .inside-jar-view.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1);
+        }
+
+        .jar-header {
+            position: absolute;
+            top: 30px;
+            text-align: center;
+        }
+
+        .jar-header h2 {
+            font-family: 'Cinzel', serif;
+            color: #fef08a;
+            font-size: 2.2rem;
+            text-shadow: 0 0 15px #eab308;
+        }
+
+        .floating-stars-container {
+            width: 100%;
+            height: 70%;
+            position: relative;
+        }
+
+        .floating-star {
+            position: absolute;
+            cursor: pointer;
+            transition: transform 0.3s;
+            animation: floatRandom 4s infinite alternate ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .floating-star:hover {
+            transform: scale(1.4) !important;
+            z-index: 10;
+        }
+
+        .star-icon {
+            font-size: 2.8rem;
+            filter: drop-shadow(0 0 12px #fde047);
+        }
+
+        .star-owner {
+            font-size: 0.85rem;
+            background: rgba(13, 6, 20, 0.7);
+            padding: 2px 8px;
+            border-radius: 10px;
+            color: #fef08a;
+            border: 1px solid #eab308;
+            margin-top: -5px;
+        }
+
+        .close-jar-btn {
+            position: absolute;
+            bottom: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #a855f7;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: 'Quicksand', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .close-jar-btn:hover {
+            background: #a855f7;
+        }
+
+        /* ==========================================================================
+           5. KİŞİSELLEŞTİRİLMİŞ TEMATİK NOT EKRANLARI (5 TEMA)
+           ========================================================================== */
+        .note-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 300;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            padding: 20px;
+        }
+
+        .note-modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Sol Üst Geri Dön Butonu */
+        .back-btn {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            background: #000;
+            color: #fff;
+            border: 3px solid #fff;
+            padding: 10px 20px;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            z-index: 310;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            animation: pulseBtn 2s infinite;
+        }
+
+        .note-card {
+            width: 100%;
+            max-width: 600px;
+            min-height: 380px;
+            border-radius: 20px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+            overflow: hidden;
+        }
+
+        .avatar-box {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            background-size: cover;
+            background-position: center;
+            border: 4px solid #fff;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+        }
+
+        .note-author {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .note-body {
+            font-size: 1.25rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        /* --- TEMA 1: MINECRAFT --- */
+        .theme-minecraft {
+            background: #2e7d32;
+            border: 6px solid #1b5e20;
+            font-family: 'VT323', monospace;
+            color: #fff;
+            image-rendering: pixelated;
+            /* BURAYA MINECRAFT ARKA PLAN RESMİ EKLEYEBİLİRSİNİZ: background: url('minecraft-bg.png'); */
+        }
+        .theme-minecraft .note-author { font-size: 2.5rem; color: #facc15; }
+        .theme-minecraft .note-body { font-size: 1.6rem; }
+        .theme-minecraft .avatar-box { border-radius: 0; border: 4px solid #000; background-color: #8d6e63; }
+
+        /* --- TEMA 2: STARDEW VALLEY --- */
+        .theme-stardew {
+            background: #f1d399;
+            border: 6px solid #f3bc64;
+            outline: 6px solid #4a2a06;
             font-family: 'VT323', monospace;
             color: #4a2a06;
-            overflow-x: hidden;
-            padding-bottom: 50px;
+            /* BURAYA STARDEW ARKA PLAN RESMİ EKLEYEBİLİRSİNİZ: background: url('stardew-bg.png'); */
         }
-        header {
-            text-align: center; padding: 60px 20px;
-            background: linear-gradient(to bottom, #2c5c84, #5c8e32);
-            border-bottom: 8px solid #f3bc64; box-shadow: 0 8px 0 #8f5613;
-            color: #fff; text-shadow: 3px 3px 0px #000;
-        }
-        header h1 { font-size: 4.5rem; margin-bottom: 10px; animation: bounce 2s infinite alternate; }
-        header p { font-size: 2rem; color: #f3bc64; }
-        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }
-        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
-        .section-title { text-align: center; font-size: 3rem; margin: 40px 0 20px 0; color: #fff; text-shadow: 3px 3px 0px #3c2104; }
-        
-        /* DIALOG KUTULARI */
-        .dialog-container { opacity: 0; transform: translateY(50px); transition: all 0.8s ease-out; margin-bottom: 40px; }
-        .dialog-container.visible { opacity: 1; transform: translateY(0); }
-        .stardew-box {
-            background-color: #f1d399; border: 6px solid #f3bc64; outline: 6px solid #4a2a06;
-            box-shadow: inset -4px -4px 0px #b5894b, inset 4px 4px 0px #fff, 0 10px 0px rgba(0,0,0,0.2);
-            padding: 20px; display: flex; align-items: center; gap: 20px;
-        }
-        .portrait-area {
-            width: 100px; height: 100px; background-color: #9c7c4c; border: 4px solid #4a2a06;
-            box-shadow: inset 4px 4px 0px rgba(0,0,0,0.3); flex-shrink: 0;
-            display: flex; align-items: center; justify-content: center; color: #f1d399; font-size: 1.2rem;
-        }
-        .dialog-text h3 { font-size: 2.2rem; margin-bottom: 5px; color: #4a2a06; border-bottom: 2px dashed #b5894b; }
-        .dialog-text p { font-size: 1.6rem; line-height: 1.3; color: #311a02; }
+        .theme-stardew .note-author { font-size: 2.5rem; color: #4a2a06; border-bottom: 2px dashed #b5894b; }
+        .theme-stardew .note-body { font-size: 1.6rem; color: #311a02; }
+        .theme-stardew .avatar-box { border-radius: 10px; border: 4px solid #4a2a06; background-color: #9c7c4c; }
 
-        /* GALERİ VE YÜKLEME DURUMU */
-        .gallery-section {
-            background-color: #f1d399; border: 6px solid #f3bc64; outline: 6px solid #4a2a06;
-            box-shadow: inset -4px -4px 0px #b5894b, inset 4px 4px 0px #fff; padding: 30px 20px; text-align: center; margin-top: 60px;
+        /* --- TEMA 3: MY LITTLE PONY --- */
+        .theme-mlp {
+            background: linear-gradient(135deg, #f472b6, #c084fc, #38bdf8);
+            border: 6px solid #fff;
+            font-family: 'Quicksand', sans-serif;
+            color: #fff;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+            /* BURAYA MLP ARKA PLAN RESMİ EKLEYEBİLİRSİNİZ: background: url('mlp-bg.png'); */
         }
-        .stardew-btn {
-            display: inline-block; background-color: #b5894b; color: #fff; border: 4px solid #4a2a06;
-            padding: 10px 20px; font-family: 'VT323', monospace; font-size: 1.8rem; cursor: pointer;
-            box-shadow: 0 4px 0 #311a02; text-shadow: 2px 2px 0 #000;
-        }
-        #file-input { display: none; }
-        .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; margin-top: 30px; }
-        .photo-card { background: #fff; border: 4px solid #4a2a06; padding: 10px; box-shadow: 0 6px 0 rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; gap: 10px; }
-        .photo-card img { width: 100%; height: 150px; object-fit: cover; border: 2px solid #4a2a06; }
-        .download-btn { font-size: 1.3rem; padding: 4px 10px; background-color: #5c8e32; border: 2px solid #4a2a06; color: white; cursor: pointer; width: 100%; font-family: 'VT323', monospace; }
-        
-        #loading-txt { font-size: 1.5rem; color: #8f5613; display: none; margin-top: 10px; }
+        .theme-mlp .note-author { color: #fef08a; font-family: 'Caveat', cursive; font-size: 2.8rem; }
+        .theme-mlp .avatar-box { border: 4px solid #fef08a; background-color: #f472b6; }
 
+        /* --- TEMA 4: RESİM ATÖLYESİ --- */
+        .theme-art {
+            background: #fff8f0;
+            border: 8px solid #d97706;
+            font-family: 'Caveat', cursive;
+            color: #1f2937;
+            /* BURAYA RESİM ATÖLYESİ ARKA PLAN RESMİ EKLEYEBİLİRSİNİZ: background: url('sanat-bg.png'); */
+        }
+        .theme-art .note-author { font-size: 3rem; color: #b45309; }
+        .theme-art .note-body { font-size: 1.8rem; }
+        .theme-art .avatar-box { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; border: 4px solid #b45309; background-color: #fef3c7; }
+
+        /* --- TEMA 5: DERSHANE / NOT DEFTERİ --- */
+        .theme-classroom {
+            background: #ffffff;
+            background-image: linear-gradient(#e5e7eb 1px, transparent 1px);
+            background-size: 100% 1.8rem;
+            border-left: 12px solid #ef4444;
+            border-top: 2px solid #e5e7eb;
+            border-right: 2px solid #e5e7eb;
+            border-bottom: 2px solid #e5e7eb;
+            font-family: 'Caveat', cursive;
+            color: #1e3a8a;
+            text-align: left;
+            align-items: flex-start;
+            padding-left: 50px;
+        }
+        .theme-classroom .note-author { font-size: 2.8rem; color: #991b1b; }
+        .theme-classroom .note-body { font-size: 1.7rem; line-height: 1.8rem; }
+        .theme-classroom .avatar-box { border-radius: 10px; border: 3px solid #1e3a8a; background-color: #dbeafe; }
+
+        /* ==========================================================================
+           6. FOTOĞRAF DUVARI (MASANIN ALTI - MANTAR PANO)
+           ========================================================================== */
+        .corkboard-section {
+            width: 100%;
+            min-height: 80vh;
+            background: #78350f;
+            background-image: radial-gradient(#92400e 15%, transparent 16%);
+            background-size: 15px 15px;
+            border-top: 15px solid #451a03;
+            box-shadow: inset 0 10px 30px rgba(0,0,0,0.8);
+            padding: 60px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .board-title {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            color: #fef08a;
+            text-shadow: 2px 2px 0 #451a03;
+            margin-bottom: 10px;
+        }
+
+        .upload-btn-label {
+            background: #b45309;
+            color: #fff;
+            border: 3px solid #fef08a;
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+            transition: all 0.3s;
+            margin-bottom: 40px;
+        }
+
+        .upload-btn-label:hover {
+            background: #d97706;
+            transform: translateY(-3px);
+        }
+
+        #photo-upload-input {
+            display: none;
+        }
+
+        .photo-wall-grid {
+            width: 100%;
+            max-width: 1100px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 30px;
+        }
+
+        .polaroid-card {
+            background: #fff;
+            padding: 12px 12px 20px 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            transform: rotate(-2deg);
+            transition: transform 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .polaroid-card:nth-child(even) {
+            transform: rotate(3deg);
+        }
+
+        .polaroid-card:hover {
+            transform: scale(1.08) rotate(0deg);
+            z-index: 20;
+        }
+
+        /* Mantar pano pini */
+        .pin {
+            width: 15px;
+            height: 15px;
+            background: #ef4444;
+            border-radius: 50%;
+            position: absolute;
+            top: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+        }
+
+        .polaroid-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .download-photo-btn {
+            margin-top: 12px;
+            background: #059669;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: bold;
+            width: 100%;
+            transition: background 0.2s;
+        }
+
+        .download-photo-btn:hover {
+            background: #10b981;
+        }
+
+        /* ==========================================================================
+           7. ANİMASYONLAR
+           ========================================================================== */
+        @keyframes pulseTitle {
+            from { text-shadow: 0 0 20px #a855f7, 0 0 40px #7e22ce; }
+            to { text-shadow: 0 0 30px #c084fc, 0 0 60px #a855f7; }
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+        @keyframes glowPulse {
+            from { opacity: 0.6; box-shadow: 0 0 20px #facc15; }
+            to { opacity: 1; box-shadow: 0 0 50px #fde047; }
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes floatGlow {
+            from { transform: translateY(0); opacity: 0.7; }
+            to { transform: translateY(-8px); opacity: 1; }
+        }
+        @keyframes floatRandom {
+            0% { transform: translate(0, 0); }
+            50% { transform: translate(10px, -15px); }
+            100% { transform: translate(-10px, 10px); }
+        }
+        @keyframes pulseBtn {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* MOBİL UYUM */
         @media (max-width: 600px) {
-            header h1 { font-size: 3rem; } header p { font-size: 1.5rem; }
-            .stardew-box { flex-direction: column; text-align: center; }
+            .sky-title { font-size: 2.2rem; }
+            .window-area { top: 20px; right: 20px; width: 110px; height: 150px; }
+            .fortune-table { width: 280px; height: 150px; }
+            .theme-classroom { padding-left: 30px; }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>Mutlu Yıllar Sahra!</h1>
-        <p>Pelican Kasabası sakinlerinden sana bir mesaj var... 🎂🌾</p>
-    </header>
+    <div class="cinematic-container">
+        
+        <section class="sky-section">
+            <h1 class="sky-title">Mutlu Yıllar Sahra ✨</h1>
+            <p style="color: #d8b4fe; font-size: 1.2rem; margin-top: 10px;">Büyülü bir yolculuğa hazır mısın?</p>
+            <div class="scroll-down-hint">Aşağı Kaydır 🌌</div>
+        </section>
 
-    <div class="container">
-        <h2 class="section-title">Kasaba Günlükleri</h2>
-        <div id="notes-container"></div>
+        <section class="tent-approach-section">
+            <div class="tree-left" id="treeLeft"></div>
+            <div class="tree-right" id="treeRight"></div>
 
-        <div class="gallery-section">
-            <h2 class="section-title" style="color: #4a2a06; text-shadow: none; margin-top: 0;">Ortak Fotoğraf Anıları</h2>
-            <p style="font-size: 1.5rem; margin-bottom: 20px;">Buraya yüklenen fotoğrafları herkes görebilir ve indirebilir!</p>
+            <div class="tent-outer" onclick="scrollToTentInside()">
+                <div class="tent-door-glow"></div>
+            </div>
+        </section>
+
+        <section class="tent-inside-section" id="tentInside">
             
-            <label for="file-input" class="stardew-btn">Fotoğraf Seç / Yükle 📸</label>
-            <input type="file" id="file-input" accept="image/*">
-            <div id="loading-txt">Fotoğraf veritabanına işleniyor, lütfen bekleyin... 🌾</div>
+            <div class="window-area">
+                <div class="window-stars">✨ 🌙</div>
+                <div class="star-hold-container">
+                    <button class="star-hold-btn" id="starHoldBtn" onclick="starHoldAction()">Yıldız Tut ⭐</button>
+                    <div class="expired-msg" id="expiredMsg">Yıldız kavanozunu açma zamanı! 🔮</div>
+                </div>
+            </div>
 
-            <div class="photo-grid" id="photo-grid"></div>
+            <div class="fortune-table">
+                <div class="jar-wrapper" id="jarWrapper" onclick="openJarModal()">
+                    <div class="jar-lid"></div>
+                    <div class="jar-body">
+                        <div class="jar-mini-stars">✨⭐✨</div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </div>
+
+    <section class="corkboard-section">
+        <h2 class="board-title">Anı Panosu 📸</h2>
+        <p style="color: #fde047; margin-bottom: 20px;">Sahra ile olan güzel anılarınızı buraya asabilirsiniz!</p>
+
+        <label for="photo-upload-input" class="upload-btn-label">Fotoğraf Ekle 📌</label>
+        <input type="file" id="photo-upload-input" accept="image/*" multiple>
+
+        <div class="photo-wall-grid" id="photoWallGrid">
+            </div>
+    </section>
+
+    <div class="modal-overlay" id="pwdModal">
+        <div class="pwd-box">
+            <h3>Büyülü Sözleri Söyle...</h3>
+            <p>Kavanozun kapağını açmak için şifreyi girmelisin, Sahra!</p>
+            <input type="password" id="pwdInput" class="pwd-input" placeholder="Şifre..." onkeypress="handleKeyPress(event)">
+            <br>
+            <button class="pwd-btn" onclick="checkPassword()">Kapağı Aç ✨</button>
+            <div class="pwd-error" id="pwdError">Yanlış büyülü söz! Tekrar dene. 🔮</div>
+        </div>
+    </div>
+
+    <div class="inside-jar-view" id="insideJarView">
+        <div class="jar-header">
+            <h2>Yıldız Kavanozunun İçi ✨</h2>
+            <p style="color: #d8b4fe;">Arkadaşlarının senin için bıraktığı yıldızlara tıkla!</p>
+        </div>
+
+        <div class="floating-stars-container" id="starsContainer">
+            </div>
+
+        <button class="close-jar-btn" onclick="closeJarView()">Çadır Masasına Dön ↩</button>
+    </div>
+
+    <div class="note-modal" id="noteModal">
+        <button class="back-btn" onclick="closeNoteModal()">⬅ Çıkış / Geri Dön</button>
+        
+        <div class="note-card" id="noteCard">
+            <div class="avatar-box" id="noteAvatar">👤</div>
+            <div class="note-author" id="noteAuthor">Yazar Adı</div>
+            <div class="note-body" id="noteBody">Buraya doğum günü mesajı gelecek...</div>
         </div>
     </div>
 
     <script>
-        /* --- 1. FIREBASE BAĞLANTI AYARLARI ---
-           Firebase Realtime Database ayarlarınızı buraya yazın. (Storage alanına gerek yoktur)
-        -------------------------------------------------- */
-        const firebaseConfig = {
-          apiKey: "AIzaSyAhfVb-sbByic1eRVXEKJtVnzTKoAYTq8w",
-          authDomain: "iyikidogdunsahraaa.firebaseapp.com",
-          databaseURL: "https://iyikidogdunsahraaa-default-rtdb.europe-west1.firebasedatabase.app",
-          projectId: "iyikidogdunsahraaa",
-          storageBucket: "iyikidogdunsahraaa.firebasestorage.app",
-          messagingSenderId: "44744950254",
-          appId: "1:44744950254:web:bfc352c8c5733220dd0eff"
-        };
-        
-        // Firebase Başlatma
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-
-        /* --- 2. ARKADAŞ LİSTESİ VE NOTLARI (20 Kişi) --- */
-        const arkadaslar = [
-            { isim: "Ahmet", gorsel: "", mesaj: "Doğum günün kutlu olsun Sahra! Yeni yaşın sana Stardew Valley'deki en verimli hasatları getirsin!" },
-            { isim: "Ayşe", gorsel: "", mesaj: "Mutlu yıllar Sahra! Yıldızçiğdemi Festivali'nin en parlak yıldızı sensin. İyi ki doğdun!" },
-            { isim: "Mehmet", gorsel: "", mesaj: "İyi ki doğdun Sahra! Umarım yeni yaşında Pierre'in dükkanındaki tüm tohumlar senin olur!" },
-            { isim: "Fatma", gorsel: "", mesaj: "Yeni yaşın kutlu olsun! Madenlerde her zaman merdiven bulduğun, şanslı bir yıl dilerim." },
-            { isim: "Can", gorsel: "", mesaj: "Mutlu yıllar! Bu yıl seran her zaman dolu, ekinlerin hep altın kalitede olsun." },
-            { isim: "Zeynep", gorsel: "", mesaj: "Sahra doğum günün kutlu olsun! Kasabanın en sevilen çiftçisi, iyi ki varsın!" },
-            { isim: "Ali", gorsel: "", mesaj: "Doğum günün kutlu olsun! Krobus ile sıkı dost olduğun harika bir yaş dilerim." },
-            { isim: "Elif", gorsel: "", mesaj: "Nice mutlu senelere Sahra! Bugün festival günü, senin günün! Eğlenmene bak." },
-            { isim: "Burak", gorsel: "", mesaj: "İyi ki doğdun! Junimolar bu yıl senin için çalışsın, her şey gönlünce olsun." },
-            { isim: "Ece", gorsel: "", mesaj: "Yeni yaşın kutlu olsun Sahra. Kasabamıza neşe katıyorsun, iyi ki bizimlesin." },
-            { isim: "Deniz", gorsel: "", mesaj: "Mutlu yıllar! Deniz kabukları ve değerli taşlar bu yıl hep senin sepetine dolsun." },
-            { isim: "Selin", gorsel: "", mesaj: "Doğum günün kutlu olsun! Marlon amca madenlerde sana hep en iyi kılıçları versin!" },
-            { isim: "Gökhan", gorsel: "", mesaj: "Nice yaşlara Sahra! Çiftliğinde bol bol ördek tüyü ve tavşan ayağı bulman dileğiyle." },
-            { isim: "Merve", gorsel: "", mesaj: "İyi ki doğdun canım! Yeni yaşında şansın ve mutluluğun hep en yüksek seviyede olsun." },
-            { isim: "Okan", gorsel: "", mesaj: "Mutlu yıllar! Bu sene büyükbabanın hayaleti çiftliğini ziyaret ettiğinde 4 mum birden yaksın!" },
-            { isim: "Büşra", gorsel: "", mesaj: "Doğum günün kutlu olsun Sahra! Kasabanın kalbi sensin, iyi ki doğdun." },
-            { isim: "Hakan", gorsel: "", mesaj: "Yeni yaşın mübarek olsun çiftçi Sahra! Ağaçlarından bol bol akçaağaç şurubu aksın." },
-            { isim: "Gamze", gorsel: "", mesaj: "Nice mutlu, sağlıklı ve oyun dolu senelere! Her günün şanslı gün olsun." },
-            { isim: "Yiğit", gorsel: "", mesaj: "İyi ki doğdun! Linus ile doğada harika tarifler keşfedeceğin bir yıl dilerim." },
-            { isim: "Gizem", gorsel: "", mesaj: "Doğum günün kutlu olsun Sahra! 20 arkadaşın olarak seni çok seviyoruz, iyi ki varsın!" }
+        /* ==========================================================================
+           1. ARKADAŞ NOTLARI VE TEMALARI (SİZ BURAYI DÜZENLEYEBİLİRSİNİZ)
+           Aşağıdaki diziden temaları değiştirebilir, yeni arkadaşlar ekleyebilirsiniz.
+           Desteklenen Temalar: 'minecraft', 'stardew', 'mlp', 'art', 'classroom'
+           ========================================================================== */
+        const arkadasNotlari = [
+            { id: 1, isim: "Ahmet", tema: "minecraft", avatar: "🗡️", mesaj: "İyi ki doğdun Sahra! Birlikte daha nice elmaslar kazacağımız harika bir yaş dilerim!" },
+            { id: 2, isim: "Ayşe", tema: "stardew", avatar: "🌾", mesaj: "Mutlu yıllar! Stardew Valley çiftliğindeki en bereketli hasatlar senin olsun!" },
+            { id: 3, isim: "Zeynep", tema: "mlp", avatar: "🦄", mesaj: "Sahra'cım yeni yaşın dostluk ve sihirle dolsun! Seni çok seviyoruz, iyi ki varsın!" },
+            { id: 4, isim: "Mehmet", tema: "art", avatar: "🎨", mesaj: "Doğum günün kutlu olsun! Hayatın hep en güzel renklerle tuvaline yansısın." },
+            { id: 5, isim: "Can", tema: "classroom", avatar: "📚", mesaj: "İyi ki doğdun! Dershane sıralarında çekilen tüm çilelere değecek harika bir yıl senin olsun!" },
+            { id: 6, isim: "Elif", tema: "mlp", avatar: "🌟", mesaj: "Nice mutlu senelere! Yıldızlar bu yıl tüm dileklerini gerçekleştirsin!" },
+            { id: 7, isim: "Burak", tema: "minecraft", avatar: "⛏️", mesaj: "Mutlu yıllar! Creeper'lardan uzak, bol maceralı bir yıl dilerim!" },
+            { id: 8, isim: "Selin", tema: "stardew", avatar: "🐔", mesaj: "Doğum günün kutlu olsun Sahra! Yıldız Çiğdemi festivalinin en parlak yıldızı sensin." }
         ];
 
-        const notesContainer = document.getElementById('notes-container');
-        arkadaslar.forEach(arkadas => {
-            const dialogContainer = document.createElement('div'); dialogContainer.className = 'dialog-container';
-            const stardewBox = document.createElement('div'); stardewBox.className = 'stardew-box';
-            const portraitArea = document.createElement('div'); portraitArea.className = 'portrait-area';
-            portraitArea.innerHTML = '<span>Görsel</span>';
-            const dialogText = document.createElement('div'); dialogText.className = 'dialog-text';
-            dialogText.innerHTML = `<h3>${arkadas.isim}</h3><p>${arkadas.mesaj}</p>`;
-            stardewBox.appendChild(portraitArea); stardewBox.appendChild(dialogText);
-            dialogContainer.appendChild(stardewBox); notesContainer.appendChild(dialogContainer);
-        });
+        /* ==========================================================================
+           2. SÜRE KONTROLÜ (27 Temmuz 00:00)
+           ========================================================================== */
+        function checkTimeLimit() {
+            // Hedef Tarih: 27 Temmuz 2026 (veya içinde bulunduğumuz yılın 27 Temmuz'u)
+            const targetDate = new Date('2026-07-27T00:00:00'); 
+            const now = new Date();
 
-        /* --- INTERSECTION OBSERVER (Animasyon) --- */
-        setTimeout(() => {
-            const dialogs = document.querySelectorAll('.dialog-container');
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); } });
-            }, { threshold: 0.1 });
-            dialogs.forEach(dialog => observer.observe(dialog));
-        }, 100);
+            const starHoldBtn = document.getElementById('starHoldBtn');
+            const expiredMsg = document.getElementById('expiredMsg');
 
-        /* --- 3. DOĞRUDAN REALTIME DATABASE KULLANAN FOTOĞRAF SİSTEMİ --- */
-        const fileInput = document.getElementById('file-input');
-        const photoGrid = document.getElementById('photo-grid');
-        const loadingTxt = document.getElementById('loading-txt');
-
-        fileInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file || !file.type.match('image.*')) return;
-
-            // Fotoğraf boyutunu kontrol et (Ücretsiz veritabanı sınırını aşmamak için maksimum 2.5 MB önerilir)
-            if (file.size > 2.5 * 1024 * 1024) {
-                alert("Fotoğraf boyutu çok büyük! Veritabanı sağlığı için lütfen 2.5MB'tan daha küçük bir görsel seçin.");
-                return;
+            if (now >= targetDate) {
+                // Zaman doldu!
+                starHoldBtn.classList.add('expired');
+                starHoldBtn.disabled = true;
+                expiredMsg.style.display = 'block';
             }
+        }
 
-            loadingTxt.style.display = "block";
+        function starHoldAction() {
+            alert("Yıldız dileğin alındı! 27 Temmuz 00:00'da kavanoz tamamen açılacak ✨");
+        }
 
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const base64Image = event.target.result; // Fotoğraf artık uzun bir metin dizisi oldu
+        /* ==========================================================================
+           3. SİNEMATİK KAYDIRMA & PARALLAX AĞAÇ EFEKTİ
+           ========================================================================== */
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            const treeLeft = document.getElementById('treeLeft');
+            const treeRight = document.getElementById('treeRight');
 
-                // Doğrudan Realtime Database'e metin olarak kaydediyoruz
-                database.ref('galeri').push({
-                    imageUrl: base64Image,
-                    timestamp: Date.now()
-                }).then(() => {
-                    loadingTxt.style.display = "none";
-                    fileInput.value = '';
-                }).catch(error => {
-                    console.error("Yükleme hatası:", error);
-                    alert("Yüklenirken bir hata oluştu! Lütfen veritabanı kurallarınızı (Rules) kontrol edin.");
-                    loadingTxt.style.display = "none";
-                });
-            };
-            reader.readAsDataURL(file);
+            // Kaydırdıkça ağaçlar yanlara doğru açılarak çadırı gösterir
+            if (scrollY > 200) {
+                const moveAmount = (scrollY - 200) * 0.4;
+                treeLeft.style.transform = `translateX(-${moveAmount}px)`;
+                treeRight.style.transform = `translateX(${moveAmount}px)`;
+            } else {
+                treeLeft.style.transform = `translateX(0px)`;
+                treeRight.style.transform = `translateX(0px)`;
+            }
         });
 
-        // Veri tabanını canlı dinleme (Biri eklediğinde anında herkesin ekranına düşer)
-        database.ref('galeri').on('child_added', function(snapshot) {
-            const data = snapshot.val();
-            ekranaFotoEkle(data.imageUrl);
-        });
+        function scrollToTentInside() {
+            document.getElementById('tentInside').scrollIntoView({ behavior: 'smooth' });
+        }
 
-        function ekranaFotoEkle(url) {
-            const card = document.createElement('div');
-            card.className = 'photo-card';
+        /* ==========================================================================
+           4. ŞİFRE İLE KAVANOZ AÇMA SİSTEMİ
+           ========================================================================== */
+        const SAHRA_SIFRE = "sahra123"; // Sahra'nın girmesi gereken şifre
 
-            const img = document.createElement('img');
-            img.src = url; // Base64 metnini doğrudan kaynak olarak kullanabiliyoruz
+        function openJarModal() {
+            document.getElementById('jarWrapper').classList.add('open');
+            setTimeout(() => {
+                document.getElementById('pwdModal').classList.add('active');
+            }, 400);
+        }
 
-            const downloadBtn = document.createElement('button');
-            downloadBtn.className = 'download-btn';
-            downloadBtn.innerText = 'İndir 💾';
-            
-            downloadBtn.addEventListener('click', function() {
-                // Base64 formatındaki resmi doğrudan indirme tetikleyicisi
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `sahra-ani-${Date.now()}.png`;
-                link.click();
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        }
+
+        function checkPassword() {
+            const inputVal = document.getElementById('pwdInput').value;
+            const pwdError = document.getElementById('pwdError');
+
+            if (inputVal === SAHRA_SIFRE) {
+                pwdError.style.display = 'none';
+                document.getElementById('pwdModal').classList.remove('active');
+                
+                // Sinematik Geçiş: Kavanozun içine gir
+                setTimeout(() => {
+                    openInsideJarView();
+                }, 300);
+            } else {
+                pwdError.style.display = 'block';
+            }
+        }
+
+        /* ==========================================================================
+           5. KAVANOZ İÇİ VE YÜZEN YILDIZLARIN OLUŞTURULMASI
+           ========================================================================== */
+        function openInsideJarView() {
+            const insideView = document.getElementById('insideJarView');
+            const starsContainer = document.getElementById('starsContainer');
+            starsContainer.innerHTML = ''; // Temizle
+
+            // Yıldızları ekrana rastgele konumlandır
+            arkadasNotlari.forEach((notData, index) => {
+                const starEl = document.createElement('div');
+                starEl.className = 'floating-star';
+                
+                // Rastgele X ve Y konumları (%)
+                const randomX = Math.floor(Math.random() * 80) + 10;
+                const randomY = Math.floor(Math.random() * 70) + 15;
+                const randomDelay = (Math.random() * 2).toFixed(1);
+
+                starEl.style.left = `${randomX}%`;
+                starEl.style.top = `${randomY}%`;
+                starEl.style.animationDelay = `${randomDelay}s`;
+
+                starEl.innerHTML = `
+                    <div class="star-icon">⭐</div>
+                    <div class="star-owner">${notData.isim}</div>
+                `;
+
+                starEl.onclick = () => openNoteModal(notData);
+                starsContainer.appendChild(starEl);
             });
 
-            card.appendChild(img);
-            card.appendChild(downloadBtn);
-            photoGrid.insertBefore(card, photoGrid.firstChild); // En yeni resmi en üste ekler
+            insideView.classList.add('active');
         }
+
+        function closeJarView() {
+            document.getElementById('insideJarView').classList.remove('active');
+            document.getElementById('jarWrapper').classList.remove('open');
+            document.getElementById('pwdInput').value = '';
+        }
+
+        /* ==========================================================================
+           6. TEMATİK NOT EKRANI AÇILMASI
+           ========================================================================== */
+        function openNoteModal(notData) {
+            const noteModal = document.getElementById('noteModal');
+            const noteCard = document.getElementById('noteCard');
+            const noteAvatar = document.getElementById('noteAvatar');
+            const noteAuthor = document.getElementById('noteAuthor');
+            const noteBody = document.getElementById('noteBody');
+
+            // Tüm tema sınıflarını temizle
+            noteCard.className = 'note-card';
+
+            // Seçilen temayı uygula
+            noteCard.classList.add(`theme-${notData.tema}`);
+
+            // İçerikleri doldur
+            noteAvatar.innerText = notData.avatar;
+            noteAuthor.innerText = notData.isim;
+            noteBody.innerText = `"${notData.mesaj}"`;
+
+            noteModal.classList.add('active');
+        }
+
+        function closeNoteModal() {
+            document.getElementById('noteModal').classList.remove('active');
+        }
+
+        /* ==========================================================================
+           7. MANTAR PANO FOTOĞRAF YÜKLEME VE İNDİRME SİSTEMİ
+           ========================================================================== */
+        const photoUploadInput = document.getElementById('photo-upload-input');
+        const photoWallGrid = document.getElementById('photoWallGrid');
+
+        photoUploadInput.addEventListener('change', function(e) {
+            const files = e.target.files;
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                if (!file.type.match('image.*')) continue;
+
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const imgUrl = event.target.result;
+
+                    // Polaroid Kart Oluştur
+                    const card = document.createElement('div');
+                    card.className = 'polaroid-card';
+
+                    card.innerHTML = `
+                        <div class="pin"></div>
+                        <img src="${imgUrl}" alt="Anı Fotoğrafı">
+                        <button class="download-photo-btn" onclick="downloadPhoto('${imgUrl}')">İndir 💾</button>
+                    `;
+
+                    photoWallGrid.appendChild(card);
+                };
+                reader.readAsDataURL(file);
+            }
+            photoUploadInput.value = '';
+        });
+
+        function downloadPhoto(url) {
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `sahra-ani-${Date.now()}.png`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        // SAYFA YÜKLENDİĞİNDE SÜRE KONTROLÜNÜ ÇALIŞTIR
+        window.onload = function() {
+            checkTimeLimit();
+        };
     </script>
 </body>
 </html>
