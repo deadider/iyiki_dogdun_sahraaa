@@ -62,7 +62,7 @@
         }
 
         /* ==========================================================================
-           3. AĞAÇLAR VE MOR FALCI ÇADIRI (PARALLAX)
+           3. BÜYÜLÜ MOR PERDELER VE MOR FALCI ÇADIRI (PARALLAX)
            ========================================================================== */
         .tent-approach-section {
             min-height: 120vh;
@@ -74,36 +74,20 @@
             overflow: hidden;
         }
 
-        .tree-layer {
+        /* MOR PERDE KATMANLARI */
+        .curtain-layer {
             position: absolute;
             top: 0;
+            width: 45%;
             height: 100%;
             z-index: 10;
             pointer-events: none;
             transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.8));
         }
 
-        /* SOL AĞAÇ GÖRSELİ - İyice sola çekilmiş ve tam oturtulmuş kural */
-        .tree-left {
-            position: absolute !important;
-            left: -10vw !important; /* Görseli daha da sola sıfırladık */
-            top: 0 !important;
-            width: 45vw !important;
-            height: 100% !important;
-            min-height: 800px !important;
-            display: block !important;
-            z-index: 10 !important;
-            background-image: url('resimler/optimizeagaclar.png') !important;
-            background-repeat: no-repeat !important;
-            background-position: left top !important;
-            background-size: cover !important;
-        }
-
-        /* SAĞ AĞAÇ KATMANI */
-        .tree-right {
-            right: 0;
-            width: 40%;
-        }
+        .curtain-left { left: 0; }
+        .curtain-right { right: 0; }
 
         .tent-container {
             width: 360px; height: 420px;
@@ -225,7 +209,6 @@
             border: 1px solid #eab308; margin-top: -5px; white-space: nowrap;
         }
 
-        /* YÖNETİCİ NOT SİLME BUTONU */
         .delete-star-btn {
             background: rgba(239, 68, 68, 0.85);
             border: 1px solid #f87171;
@@ -235,9 +218,7 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.5);
         }
 
-        .delete-star-btn:hover {
-            background: #dc2626; transform: scale(1.2);
-        }
+        .delete-star-btn:hover { background: #dc2626; transform: scale(1.2); }
 
         /* ==========================================================================
            6. FORM OVERLAY & TEMATİK NOT OKUMA
@@ -355,14 +336,37 @@
 
         <section class="tent-approach-section">
             
-            <div class="tree-layer tree-left" id="treeLeft"></div>
+            <div class="curtain-layer curtain-left" id="curtainLeft">
+                <svg viewBox="0 0 300 800" style="width: 100%; height: 100%;" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="purpleVelvetLeft" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#2e1065"/>
+                            <stop offset="30%" stop-color="#581c87"/>
+                            <stop offset="70%" stop-color="#3b0764"/>
+                            <stop offset="100%" stop-color="#1e1b4b"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M0,0 L300,0 C220,200 280,500 200,800 L0,800 Z" fill="url(#purpleVelvetLeft)"/>
+                    <path d="M50,0 Q120,400 30,800" stroke="#7e22ce" stroke-width="4" fill="none" opacity="0.5"/>
+                    <path d="M120,0 Q180,400 100,800" stroke="#a855f7" stroke-width="3" fill="none" opacity="0.4"/>
+                    <path d="M0,0 L300,0 C220,200 280,500 200,800" stroke="#fef08a" stroke-width="6" fill="none" stroke-dasharray="10 5"/>
+                </svg>
+            </div>
 
-            <div class="tree-layer tree-right" id="treeRight">
-                <svg viewBox="0 0 300 800" style="width: 100%; height: 100%;">
-                    <path d="M300,0 L120,0 C180,200 60,400 160,800 L300,800 Z" fill="#0d041a"/>
-                    <path d="M300,50 C160,180 110,320 190,650" stroke="#3b0764" stroke-width="12" fill="none"/>
-                    <circle cx="140" cy="250" r="7" fill="#a855f7" opacity="0.7"/>
-                    <circle cx="180" cy="480" r="9" fill="#eab308" opacity="0.6"/>
+            <div class="curtain-layer curtain-right" id="curtainRight">
+                <svg viewBox="0 0 300 800" style="width: 100%; height: 100%;" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="purpleVelvetRight" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#1e1b4b"/>
+                            <stop offset="30%" stop-color="#3b0764"/>
+                            <stop offset="70%" stop-color="#581c87"/>
+                            <stop offset="100%" stop-color="#2e1065"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M300,0 L0,0 C80,200 20,500 100,800 L300,800 Z" fill="url(#purpleVelvetRight)"/>
+                    <path d="M250,0 Q180,400 270,800" stroke="#7e22ce" stroke-width="4" fill="none" opacity="0.5"/>
+                    <path d="M180,0 Q120,400 200,800" stroke="#a855f7" stroke-width="3" fill="none" opacity="0.4"/>
+                    <path d="M300,0 L0,0 C80,200 20,500 100,800" stroke="#fef08a" stroke-width="6" fill="none" stroke-dasharray="10 5"/>
                 </svg>
             </div>
 
@@ -663,16 +667,16 @@
             }, 1300);
         }
 
-        /* --- PARALLAX AĞAÇ KAYDIRMA --- */
+        /* --- PARALLAX PERDE KAYDIRMA ANİMASYONU --- */
         window.addEventListener('scroll', () => {
             const scrollY = window.scrollY;
             if (scrollY > 100) {
-                const moveAmount = (scrollY - 100) * 0.5;
-                document.getElementById('treeLeft').style.transform = `translateX(-${moveAmount}px)`;
-                document.getElementById('treeRight').style.transform = `translateX(${moveAmount}px)`;
+                const moveAmount = (scrollY - 100) * 0.6;
+                document.getElementById('curtainLeft').style.transform = `translateX(-${moveAmount}px)`;
+                document.getElementById('curtainRight').style.transform = `translateX(${moveAmount}px)`;
             } else {
-                document.getElementById('treeLeft').style.transform = `translateX(0px)`;
-                document.getElementById('treeRight').style.transform = `translateX(0px)`;
+                document.getElementById('curtainLeft').style.transform = `translateX(0px)`;
+                document.getElementById('curtainRight').style.transform = `translateX(0px)`;
             }
         });
 
