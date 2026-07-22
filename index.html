@@ -44,8 +44,6 @@
             text-align: center;
             overflow: hidden;
             background: linear-gradient(to bottom, #030008 0%, #120626 60%, #2a0845 100%);
-            /* BURAYA GÖKYÜZÜ RESMİ EKLENEBİLİR:
-               background-image: url('resimler/gokyuzu.png') !important; background-size: cover !important; */
         }
 
         #skyCanvas {
@@ -79,27 +77,27 @@
         .tree-layer {
             position: absolute;
             top: 0;
-            width: 40%;
             height: 100%;
             z-index: 10;
             pointer-events: none;
             transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        /* SOL AĞAÇ GÖRSELİ (Düzeltilmiş Aktif Kod) */
+        /* SOL AĞAÇ GÖRSELİ (Genişletilmiş ve Ekrana Oturtulmuş Büyüklük) */
         .tree-left {
             left: 0;
+            width: 55% !important;
+            height: 100vh !important;
             background-image: url('resimler/solagaclar.png') !important;
             background-repeat: no-repeat !important;
             background-position: left top !important;
-            background-size: contain !important;
+            background-size: cover !important;
         }
 
-        /* SAĞ AĞAÇ GÖRSELİ */
+        /* SAĞ AĞAÇ KATMANI */
         .tree-right {
             right: 0;
-            /* BURAYA SAĞ AĞAÇ RESMİ EKLENEBİLİR:
-               background-image: url('resimler/sagagaclar.png') !important; background-repeat: no-repeat !important; background-position: right top !important; background-size: contain !important; */
+            width: 40%;
         }
 
         .tent-container {
@@ -222,7 +220,7 @@
             border: 1px solid #eab308; margin-top: -5px; white-space: nowrap;
         }
 
-        /* YÖNETİCİ NOT SİLME BUTONU STİLİ */
+        /* YÖNETİCİ NOT SİLME BUTONU */
         .delete-star-btn {
             background: rgba(239, 68, 68, 0.85);
             border: 1px solid #f87171;
