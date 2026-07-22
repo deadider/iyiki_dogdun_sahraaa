@@ -83,17 +83,17 @@
             transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        /* SOL AĞAÇ GÖRSELİ (Sola Çekilmiş & Dengelenmiş Boyut) */
+        /* SOL AĞAÇ GÖRSELİ - İyice sola çekilmiş ve tam oturtulmuş kural */
         .tree-left {
             position: absolute !important;
-            left: -5vw !important;
+            left: -10vw !important; /* Görseli daha da sola sıfırladık */
             top: 0 !important;
-            width: 38vw !important;
+            width: 45vw !important;
             height: 100% !important;
             min-height: 800px !important;
             display: block !important;
-            z-index: 17 !important;
-            background-image: url('resimler/optimizeagaclar.png') !important;
+            z-index: 10 !important;
+            background-image: url('resimler/soldahacokagaclar.jpg') !important;
             background-repeat: no-repeat !important;
             background-position: left top !important;
             background-size: cover !important;
