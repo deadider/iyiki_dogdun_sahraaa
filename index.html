@@ -83,15 +83,16 @@
             transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        /* SOL AĞAÇ GÖRSELİ (Genişletilmiş ve Ekrana Oturtulmuş Büyüklük) */
+        /* SOL AĞAÇ GÖRSELİ (Sol Kenara Sıfırlanmış & Genişletilmiş Boyut) */
         .tree-left {
-            left: 0;
-            width: 55% !important;
-            height: 100vh !important;
-            background-image: url('resimler/soldahacokagaclar.png') !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 48vw !important;
+            height: 110vh !important;
+            background-image: url('resimler/soldahacokagaclar.jpg') !important;
             background-repeat: no-repeat !important;
-            background-position: left top !important;
-            background-size: cover !important;
+            background-position: left bottom !important;
+            background-size: 100% 100% !important;
         }
 
         /* SAĞ AĞAÇ KATMANI */
@@ -661,8 +662,8 @@
         /* --- PARALLAX AĞAÇ KAYDIRMA --- */
         window.addEventListener('scroll', () => {
             const scrollY = window.scrollY;
-            if (scrollY > 180) {
-                const moveAmount = (scrollY - 180) * 0.4;
+            if (scrollY > 100) {
+                const moveAmount = (scrollY - 100) * 0.5;
                 document.getElementById('treeLeft').style.transform = `translateX(-${moveAmount}px)`;
                 document.getElementById('treeRight').style.transform = `translateX(${moveAmount}px)`;
             } else {
