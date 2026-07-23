@@ -259,6 +259,7 @@
             width: 90%; max-width: 480px; box-shadow: 0 0 50px #7e22ce;
             transform: scale(0.85); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             max-height: 90vh; overflow-y: auto;
+            position: relative;
         }
 
         .zoom-overlay.active .form-box { transform: scale(1); }
@@ -279,6 +280,12 @@
             border-radius: 10px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: background 0.3s;
         }
         .submit-star-btn:hover { background: #c084fc; }
+
+        .cancel-btn {
+            width: 100%; background: transparent; color: #d8b4fe; border: 1px solid #6b21a8; padding: 8px;
+            border-radius: 10px; font-size: 0.95rem; cursor: pointer; margin-top: 10px; transition: background 0.2s;
+        }
+        .cancel-btn:hover { background: rgba(168, 85, 247, 0.2); color: #fff; }
 
         .animated-flying-star {
             position: fixed; font-size: 3rem; z-index: 300; pointer-events: none;
@@ -490,6 +497,7 @@
             </div>
 
             <button class="submit-star-btn" onclick="saveAndFlyStar()">Yıldızı Kavanoza Gönder ✨</button>
+            <button class="cancel-btn" onclick="closeFormOverlay()">İptal / Çadır Masasına Dön ↩</button>
         </div>
     </div>
 
@@ -499,6 +507,7 @@
             <p style="color: #d8b4fe; margin-bottom: 15px;">Kavanozun kapağını açmak için şifreyi girmelisin!</p>
             <input type="password" id="pwdInput" class="form-input" placeholder="Şifre..." style="text-align: center; margin-bottom: 15px;">
             <button class="submit-star-btn" onclick="checkPassword()">Kapağı Aç ✨</button>
+            <button class="cancel-btn" onclick="closePwdModal()">Çıkış / Geri Dön ↩</button>
             <div id="pwdError" style="color: #f87171; display: none; margin-top: 10px;">Yanlış büyülü söz!</div>
         </div>
     </div>
@@ -540,7 +549,7 @@
     </section>
 
     <script>
-        /* --- 1. YENİLENMİŞ CANLI GÖKYÜZÜ PARILTILARI (SKY CANVAS) --- */
+        /* --- 1. CANLI GÖKYÜZÜ PARILTILARI (SKY CANVAS) --- */
         const skyCanvas = document.getElementById('skyCanvas');
         const skyCtx = skyCanvas.getContext('2d');
         let skyStars = [];
@@ -610,13 +619,12 @@
             requestAnimationFrame(drawFluidCanvas);
         }
 
-        /* --- 3. DÜZELTİLMİŞ PERDE AÇILMA ANİMASYONU --- */
+        /* --- 3. PERDE AÇILMA ANİMASYONU --- */
         window.addEventListener('scroll', () => {
             const scrollY = window.scrollY;
             const curtainLeft = document.getElementById('curtainLeft');
             const curtainRight = document.getElementById('curtainRight');
 
-            // Kaydırma mesafesine göre akıcı şekilde yana açılma
             if (scrollY > 150) {
                 const moveAmount = (scrollY - 150) * 0.8;
                 curtainLeft.style.transform = `translateX(-${moveAmount}px)`;
@@ -636,7 +644,11 @@
 
         function getNotes() {
             const stored = localStorage.getItem('sahra_stars');
-            return stored ? JSON.parse(stored) : defaultNotes;
+            if (!stored) {
+                localStorage.setItem('sahra_stars', JSON.stringify(defaultNotes));
+                return defaultNotes;
+            }
+            return JSON.parse(stored);
         }
 
         let selectedAvatarSymbol = '🗡️';
@@ -663,6 +675,10 @@
             document.getElementById('formOverlay').classList.add('active');
         }
 
+        function closeFormOverlay() {
+            document.getElementById('formOverlay').classList.remove('active');
+        }
+
         function saveAndFlyStar() {
             const author = document.getElementById('formAuthor').value.trim();
             const message = document.getElementById('formMessage').value.trim();
@@ -683,7 +699,7 @@
             });
             localStorage.setItem('sahra_stars', JSON.stringify(currentNotes));
 
-            document.getElementById('formOverlay').classList.remove('active');
+            closeFormOverlay();
             createFlyingStarAnimation();
 
             document.getElementById('formAuthor').value = '';
@@ -728,10 +744,17 @@
             }, 400);
         }
 
+        function closePwdModal() {
+            document.getElementById('pwdModal').classList.remove('active');
+            document.getElementById('jarWrapper').classList.remove('open');
+            document.getElementById('pwdError').style.display = 'none';
+            document.getElementById('pwdInput').value = '';
+        }
+
         function checkPassword() {
             const inputVal = document.getElementById('pwdInput').value;
             if (inputVal === SAHRA_SIFRE) {
-                document.getElementById('pwdModal').classList.remove('active');
+                closePwdModal();
                 openInsideJarView();
             } else {
                 document.getElementById('pwdError').style.display = 'block';
