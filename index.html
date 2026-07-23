@@ -549,22 +549,8 @@
     </section>
 
     <script>
-        /* --- 0. ÇİFT FIREBASE PROJE KURULUMU --- */
-        
-        // 1. NOTLAR İÇİN FIREBASE PROJESİ (sahra-notlar)
-        const notesConfig = {
-            apiKey: "AIzaSyC_wZM1SiyJUwry-yE673scX2CILKJ_RXY",
-            authDomain: "sahra-notlar.firebaseapp.com",
-            databaseURL: "https://sahra-notlar-default-rtdb.firebaseio.com", // Otomatik oluşturulan varsayılan DB adresi
-            projectId: "sahra-notlar",
-            storageBucket: "sahra-notlar.firebasestorage.app",
-            messagingSenderId: "1098557984252",
-            appId: "1:1098557984252:web:675bf3f10a9ef03519b679",
-            measurementId: "G-E6TM5625W6"
-        };
-
-        // 2. FOTOĞRAFLAR İÇİN FIREBASE PROJESİ (iyikidogdunsahraaa)
-        const photosConfig = {
+        /* --- 0. FIREBASE KURULUMU --- */
+        const firebaseConfig = {
             apiKey: "AIzaSyAhfVb-sbByic1eRVXEKJtVnzTKoAYTq8w",
             authDomain: "iyikidogdunsahraaa.firebaseapp.com",
             databaseURL: "https://iyikidogdunsahraaa-default-rtdb.europe-west1.firebasedatabase.app",
@@ -574,14 +560,11 @@
             appId: "1:44744950254:web:bfc352c8c5733220dd0eff"
         };
 
-        // Firebase Uygulamalarını Başlatma
-        const notesApp = firebase.initializeApp(notesConfig, "notesApp");
-        const photosApp = firebase.initializeApp(photosConfig, "photosApp");
-
-        // Veritabanı Bağlantılarını Ayırma
-        const notesDb = firebase.database(notesApp);
-        const photosDb = firebase.database(photosApp);
-
+        // Firebase Başlatma
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.database();
 
         /* --- 1. CANLI GÖKYÜZÜ PARILTILARI (SKY CANVAS) --- */
         const skyCanvas = document.getElementById('skyCanvas');
@@ -669,12 +652,12 @@
             }
         });
 
-        /* --- 4. FIREBASE VERİTABANI (NOTLAR: sahra-notlar) --- */
+        /* --- 4. FIREBASE VERİTABANI İLE YILDIZ NOTLARI --- */
         let globalNotes = [];
 
-        // Notlar Veritabanını Dinle
+        // Firebase'den Canlı Notları Dinle
         function listenNotesFromFirebase() {
-            notesDb.ref('sahra_stars').on('value', (snapshot) => {
+            db.ref('sahra_stars').on('value', (snapshot) => {
                 const data = snapshot.val();
                 globalNotes = [];
                 if (data) {
@@ -731,8 +714,8 @@
                 avatar: selectedAvatarSymbol
             };
 
-            // Notlar Veritabanına (notesDb) Kaydet
-            notesDb.ref('sahra_stars').push(newNote);
+            // Firebase Buluta Kaydet
+            db.ref('sahra_stars').push(newNote);
 
             closeFormOverlay();
             createFlyingStarAnimation();
@@ -826,7 +809,7 @@
         function deleteNote(firebaseId, event) {
             event.stopPropagation();
             if (confirm("Bu notu silmek istediğinden emin misin?")) {
-                notesDb.ref(`sahra_stars/${firebaseId}`).remove();
+                db.ref(`sahra_stars/${firebaseId}`).remove();
                 setTimeout(openInsideJarView, 300);
             }
         }
@@ -857,13 +840,13 @@
             document.getElementById('noteModal').classList.remove('active');
         }
 
-        /* --- 6. MANTAR PANO (FOTOĞRAFLAR: iyikidogdunsahraaa) --- */
+        /* --- 6. MANTAR PANO & FIREBASE DEPOLAMA --- */
         const photoUploadInput = document.getElementById('photo-upload-input');
         const photoWallGrid = document.getElementById('photoWallGrid');
 
-        // Fotoğraflar Veritabanını (photosDb) Dinle
+        // Firebase'den Fotoğrafları Dinle
         function listenPhotosFromFirebase() {
-            photosDb.ref('sahra_photos').on('value', (snapshot) => {
+            db.ref('sahra_photos').on('value', (snapshot) => {
                 const data = snapshot.val();
                 photoWallGrid.innerHTML = '';
                 if (data) {
@@ -890,8 +873,7 @@
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     const imgUrl = event.target.result;
-                    // Fotoğraf Veritabanına (photosDb) Kaydet
-                    photosDb.ref('sahra_photos').push({
+                    db.ref('sahra_photos').push({
                         url: imgUrl,
                         timestamp: Date.now()
                     });
