@@ -242,7 +242,7 @@
         .delete-star-btn:hover { background: #dc2626; transform: scale(1.2); }
 
         /* ==========================================================================
-           6. FORM OVERLAY & TEMATİK NOT OKUMA (YENİLENMİŞ SCROLL DÜZENİ)
+           6. FORM OVERLAY & TEMATİK NOT OKUMA
            ========================================================================== */
         .zoom-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -308,7 +308,6 @@
             cursor: pointer; z-index: 360; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
 
-        /* DÜZELTİLMİŞ YILDIZ OKUMA KARTI DÜZENİ */
         .note-card {
             width: 100%; 
             max-width: 540px; 
@@ -343,7 +342,6 @@
             margin-bottom: 12px;
         }
 
-        /* METİN VE RESMİ BİRLİKTE KAYDIRAN KAPSAYICI (SCROLLABLE WRAPPER) */
         .note-scroll-content {
             width: 100%;
             overflow-y: auto;
@@ -354,10 +352,7 @@
             gap: 16px;
         }
 
-        /* Özel Kaydırma Çubuğu Stili */
-        .note-scroll-content::-webkit-scrollbar {
-            width: 6px;
-        }
+        .note-scroll-content::-webkit-scrollbar { width: 6px; }
         .note-scroll-content::-webkit-scrollbar-thumb {
             background: rgba(255, 255, 255, 0.4);
             border-radius: 4px;
@@ -368,10 +363,9 @@
             line-height: 1.6;
             width: 100%;
             word-break: break-word;
-            white-space: pre-wrap; /* Paragraf girintilerini korur */
+            white-space: pre-wrap;
         }
 
-        /* GÖRSEL ALANI (METNİN ALTINDA TAM VE EKSİKSİZ GÖRÜNÜR) */
         .note-image-container {
             width: 100%;
             max-width: 380px;
@@ -412,10 +406,17 @@
 
         .polaroid-card {
             background: #fff; padding: 12px 12px 20px 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); transform: rotate(-2deg); display: flex; flex-direction: column; align-items: center;
+            position: relative;
         }
 
         .polaroid-card img { width: 100%; height: 180px; object-fit: cover; margin-top: 10px; }
         .download-photo-btn { margin-top: 12px; background: #059669; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; width: 100%; }
+        
+        .delete-photo-btn {
+            position: absolute; top: -10px; right: -10px; background: #ef4444; color: white;
+            border: 2px solid white; border-radius: 50%; width: 28px; height: 28px; font-weight: bold;
+            cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+        }
 
         @keyframes pulseTitle { from { text-shadow: 0 0 20px #c084fc; } to { text-shadow: 0 0 45px #a855f7; } }
         @keyframes pulseGlow { from { opacity: 0.7; } to { opacity: 1; filter: drop-shadow(0 0 22px #fde047); } }
@@ -632,8 +633,24 @@
     </section>
 
     <script>
-        /* --- 0. FIREBASE KURULUMU --- */
-        const firebaseConfig = {
+        /* ==========================================================================
+           0. ÇİFT FIREBASE BAŞLATMA ENTEGRASYONU
+           ========================================================================== */
+
+        // PROJE 1: NOTLAR DATABASE PROJESİ ("sahra-notlar")
+        const notesConfig = {
+            apiKey: "AIzaSyC_wZM1SiyJUwry-yE673scX2CILKJ_RXY",
+            authDomain: "sahra-notlar.firebaseapp.com",
+            databaseURL: "https://sahra-notlar-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "sahra-notlar",
+            storageBucket: "sahra-notlar.firebasestorage.app",
+            messagingSenderId: "1098557984252",
+            appId: "1:1098557984252:web:675bf3f10a9ef03519b679",
+            measurementId: "G-E6TM5625W6"
+        };
+
+        // PROJE 2: FOTOĞRAFLAR DATABASE PROJESİ ("iyikidogdunsahraaa")
+        const photosConfig = {
             apiKey: "AIzaSyAhfVb-sbByic1eRVXEKJtVnzTKoAYTq8w",
             authDomain: "iyikidogdunsahraaa.firebaseapp.com",
             databaseURL: "https://iyikidogdunsahraaa-default-rtdb.europe-west1.firebasedatabase.app",
@@ -643,10 +660,14 @@
             appId: "1:44744950254:web:bfc352c8c5733220dd0eff"
         };
 
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const db = firebase.database();
+        // İki Farklı Projeyi Başlatıyoruz
+        const appNotes = firebase.initializeApp(notesConfig, "NotesApp");
+        const appPhotos = firebase.initializeApp(photosConfig, "PhotosApp");
+
+        // Veritabanı Bağlantıları
+        const dbNotes = firebase.database(appNotes);   // NOTLAR İçin Veritabanı (1 GB Limiti Ayrı)
+        const dbPhotos = firebase.database(appPhotos); // FOTOĞRAFLAR İçin Veritabanı (1 GB Limiti Ayrı)
+
 
         /* --- 1. CANLI GÖKYÜZÜ PARILTILARI (SKY CANVAS) --- */
         const skyCanvas = document.getElementById('skyCanvas');
@@ -734,11 +755,12 @@
             }
         });
 
-        /* --- 4. FIREBASE VERİTABANI İLE YILDIZ NOTLARI --- */
+        /* --- 4. FIREBASE 1: NOTLARI DİNLEME VE KAYDETME (dbNotes) --- */
         let globalNotes = [];
 
         function listenNotesFromFirebase() {
-            db.ref('sahra_stars').on('value', (snapshot) => {
+            // "dbNotes" veritabanından çekiliyor
+            dbNotes.ref('sahra_stars').on('value', (snapshot) => {
                 const data = snapshot.val();
                 globalNotes = [];
                 if (data) {
@@ -798,7 +820,8 @@
                     gorsel: imageData
                 };
 
-                db.ref('sahra_stars').push(newNote);
+                // Notları "dbNotes" veritabanına kaydediyoruz
+                dbNotes.ref('sahra_stars').push(newNote);
 
                 closeFormOverlay();
                 createFlyingStarAnimation();
@@ -904,7 +927,7 @@
         function deleteNote(firebaseId, event) {
             event.stopPropagation();
             if (confirm("Bu notu silmek istediğinden emin misin?")) {
-                db.ref(`sahra_stars/${firebaseId}`).remove();
+                dbNotes.ref(`sahra_stars/${firebaseId}`).remove();
                 setTimeout(openInsideJarView, 300);
             }
         }
@@ -938,7 +961,6 @@
                 imgEl.src = '';
             }
 
-            // Modal açıldığında kaydırma alanını en üste al
             const scrollArea = noteCard.querySelector('.note-scroll-content');
             if (scrollArea) scrollArea.scrollTop = 0;
 
@@ -949,12 +971,13 @@
             document.getElementById('noteModal').classList.remove('active');
         }
 
-        /* --- 6. MANTAR PANO & FIREBASE DEPOLAMA --- */
+        /* --- 6. FIREBASE 2: MANTAR PANO & FOTOĞRAF VERİTABANI (dbPhotos) --- */
         const photoUploadInput = document.getElementById('photo-upload-input');
         const photoWallGrid = document.getElementById('photoWallGrid');
 
         function listenPhotosFromFirebase() {
-            db.ref('sahra_photos').on('value', (snapshot) => {
+            // Fotoğrafları "dbPhotos" veritabanından çekiyoruz
+            dbPhotos.ref('sahra_photos').on('value', (snapshot) => {
                 const data = snapshot.val();
                 photoWallGrid.innerHTML = '';
                 if (data) {
@@ -963,6 +986,7 @@
                         const card = document.createElement('div');
                         card.className = 'polaroid-card';
                         card.innerHTML = `
+                            <button class="delete-photo-btn" onclick="deletePhoto('${key}')">✕</button>
                             <img src="${imgUrl}">
                             <button class="download-photo-btn" onclick="downloadPhoto('${imgUrl}')">İndir 💾</button>
                         `;
@@ -981,7 +1005,8 @@
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     const imgUrl = event.target.result;
-                    db.ref('sahra_photos').push({
+                    // Yüklenen fotoğrafları "dbPhotos" veritabanına atıyoruz
+                    dbPhotos.ref('sahra_photos').push({
                         url: imgUrl,
                         timestamp: Date.now()
                     });
@@ -989,6 +1014,12 @@
                 reader.readAsDataURL(file);
             }
         });
+
+        function deletePhoto(photoId) {
+            if (confirm("Bu fotoğrafı panodan kaldırmak istediğinize emin misiniz?")) {
+                dbPhotos.ref(`sahra_photos/${photoId}`).remove();
+            }
+        }
 
         function downloadPhoto(url) {
             const a = document.createElement('a');
