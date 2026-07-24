@@ -665,8 +665,8 @@
         const appPhotos = firebase.initializeApp(photosConfig, "PhotosApp");
 
         // Veritabanı Bağlantıları
-        const dbNotes = firebase.database(appNotes);   // NOTLAR İçin Veritabanı (1 GB Limiti Ayrı)
-        const dbPhotos = firebase.database(appPhotos); // FOTOĞRAFLAR İçin Veritabanı (1 GB Limiti Ayrı)
+        const dbNotes = firebase.database(appNotes);   
+        const dbPhotos = firebase.database(appPhotos); 
 
 
         /* --- 1. CANLI GÖKYÜZÜ PARILTILARI (SKY CANVAS) --- */
@@ -759,7 +759,6 @@
         let globalNotes = [];
 
         function listenNotesFromFirebase() {
-            // "dbNotes" veritabanından çekiliyor
             dbNotes.ref('sahra_stars').on('value', (snapshot) => {
                 const data = snapshot.val();
                 globalNotes = [];
@@ -820,7 +819,6 @@
                     gorsel: imageData
                 };
 
-                // Notları "dbNotes" veritabanına kaydediyoruz
                 dbNotes.ref('sahra_stars').push(newNote);
 
                 closeFormOverlay();
@@ -870,7 +868,7 @@
             document.getElementById('tentInside').scrollIntoView({ behavior: 'smooth' });
         }
 
-        /* --- 5. ŞİFRE & KAVANOZ İÇİ --- */
+        /* --- 5. ŞİFRE & ÇAKIŞMA ÖNLEYİCİLİ KAVANOZ İÇİ --- */
         const SAHRA_SIFRE = "sahra123";
 
         function openJarModal() {
@@ -897,17 +895,47 @@
             }
         }
 
+        /* YILDIZLARIN ÜST ÜSTE BİNMESİNİ ÖNLEYEN YENİ GELİŞMİŞ FONKSİYON */
         function openInsideJarView() {
             const insideView = document.getElementById('insideJarView');
             const starsContainer = document.getElementById('starsContainer');
             starsContainer.innerHTML = '';
 
+            const placedPositions = []; // Yerleşen yıldızların koordinat geçmişi
+            const minDistance = 80;     // Yıldızlar arası piksel cinsinden güvenli mesafe
+
+            const containerWidth = starsContainer.clientWidth || window.innerWidth;
+            const containerHeight = starsContainer.clientHeight || (window.innerHeight * 0.7);
+
             globalNotes.forEach(notData => {
                 const starEl = document.createElement('div');
                 starEl.className = 'floating-star';
                 
-                const randomX = Math.floor(Math.random() * 75) + 10;
-                const randomY = Math.floor(Math.random() * 50) + 20;
+                let randomX, randomY;
+                let overlap = true;
+                let attempts = 0;
+
+                // Çakışmayan boş bir alan bulana kadar deneme yap
+                while (overlap && attempts < 100) {
+                    attempts++;
+                    const percentX = Math.floor(Math.random() * 70) + 10; // %10 - %80 arası
+                    const percentY = Math.floor(Math.random() * 55) + 15; // %15 - %70 arası
+
+                    const posX = (percentX / 100) * containerWidth;
+                    const posY = (percentY / 100) * containerHeight;
+
+                    // Mevcut tüm yıldızlar ile olan uzaklığı ölç
+                    overlap = placedPositions.some(pos => {
+                        const distance = Math.hypot(pos.x - posX, pos.y - posY);
+                        return distance < minDistance;
+                    });
+
+                    if (!overlap || attempts === 100) {
+                        randomX = percentX;
+                        randomY = percentY;
+                        placedPositions.push({ x: posX, y: posY });
+                    }
+                }
 
                 starEl.style.left = `${randomX}%`;
                 starEl.style.top = `${randomY}%`;
@@ -976,7 +1004,6 @@
         const photoWallGrid = document.getElementById('photoWallGrid');
 
         function listenPhotosFromFirebase() {
-            // Fotoğrafları "dbPhotos" veritabanından çekiyoruz
             dbPhotos.ref('sahra_photos').on('value', (snapshot) => {
                 const data = snapshot.val();
                 photoWallGrid.innerHTML = '';
@@ -1005,7 +1032,6 @@
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     const imgUrl = event.target.result;
-                    // Yüklenen fotoğrafları "dbPhotos" veritabanına atıyoruz
                     dbPhotos.ref('sahra_photos').push({
                         url: imgUrl,
                         timestamp: Date.now()
