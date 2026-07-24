@@ -195,25 +195,47 @@
         .jar-body-svg { width: 120px; height: 155px; filter: drop-shadow(0 0 25px rgba(192, 132, 252, 0.7)); }
 
         /* ==========================================================================
-           5. KAVANOZ İÇİ & BÜYÜLÜ SIVI DÖNGÜSÜ
+           5. KAVANOZ İÇİ & BÜYÜLÜ SIVI DÖNGÜSÜ (GÜNCELLENEN KAYDIRILABİLİR YAPI)
            ========================================================================== */
         .inside-jar-view {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            opacity: 0; pointer-events: none; transition: opacity 0.8s ease-in-out; overflow: hidden;
+            z-index: 200;
+            opacity: 0; pointer-events: none; transition: opacity 0.8s ease-in-out;
+            overflow-y: auto; /* Dikeyde kaydırmaya izin ver */
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
         }
 
         .inside-jar-view.active { opacity: 1; pointer-events: auto; }
 
+        /* Arka plan video ve canvas ekran kaydırıldığında sabit kalır */
         .magic-fluid-video {
-            position: absolute; top: 50%; left: 50%; min-width: 100%; min-height: 100%;
+            position: fixed; top: 50%; left: 50%; min-width: 100%; min-height: 100%;
             transform: translate(-50%, -50%); object-fit: cover; z-index: -2;
             filter: brightness(0.6) hue-rotate(260deg);
+            pointer-events: none;
         }
 
-        #fluidCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        #fluidCanvas { 
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; 
+            pointer-events: none;
+        }
 
-        .floating-stars-container { width: 100%; height: 70%; position: relative; z-index: 5; }
+        .inside-jar-header {
+            position: sticky; top: 0; left: 0; width: 100%;
+            text-align: center; z-index: 10;
+            padding: 25px 10px 15px 10px;
+            background: linear-gradient(to bottom, rgba(8, 3, 15, 0.85) 0%, rgba(8, 3, 15, 0) 100%);
+            backdrop-filter: blur(2px);
+        }
+
+        .floating-stars-container { 
+            width: 100%; 
+            min-height: 120vh; /* Çoklu yıldızlar için geniş kaydırma alanı */
+            position: relative; 
+            z-index: 5;
+            padding-bottom: 120px; /* En alttaki buton ve yıldızlar çakışmasın */
+        }
 
         .floating-star {
             position: absolute; cursor: pointer; transition: transform 0.3s;
@@ -240,6 +262,17 @@
         }
 
         .delete-star-btn:hover { background: #dc2626; transform: scale(1.2); }
+
+        .inside-jar-back-btn {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            z-index: 20;
+        }
+
+        /* Kavanoz İçi Özel Mor Scrollbar */
+        .inside-jar-view::-webkit-scrollbar { width: 8px; }
+        .inside-jar-view::-webkit-scrollbar-track { background: rgba(8, 3, 15, 0.6); }
+        .inside-jar-view::-webkit-scrollbar-thumb { background: rgba(168, 85, 247, 0.6); border-radius: 4px; }
+        .inside-jar-view::-webkit-scrollbar-thumb:hover { background: rgba(192, 132, 252, 0.9); }
 
         /* ==========================================================================
            6. FORM OVERLAY & TEMATİK NOT OKUMA
@@ -596,14 +629,14 @@
         
         <canvas id="fluidCanvas"></canvas>
 
-        <div style="position: absolute; top: 30px; text-align: center; z-index: 5;">
+        <div class="inside-jar-header">
             <h2 style="font-family: 'Cinzel', serif; color: #fef08a; font-size: 2.2rem;">Yıldız Kavanozu ✨</h2>
             <p style="color: #d8b4fe;">Arkadaşlarının senin için bıraktığı yıldızlara tıkla!</p>
         </div>
 
         <div class="floating-stars-container" id="starsContainer"></div>
 
-        <button class="back-btn" style="top: auto; bottom: 30px; left: 50%; transform: translateX(-50%);" onclick="closeJarView()">Çadır Masasına Dön ↩</button>
+        <button class="back-btn inside-jar-back-btn" onclick="closeJarView()">Çadır Masasına Dön ↩</button>
     </div>
 
     <div class="note-modal" id="noteModal">
@@ -868,7 +901,7 @@
             document.getElementById('tentInside').scrollIntoView({ behavior: 'smooth' });
         }
 
-        /* --- 5. ŞİFRE & ÇAKIŞMA ÖNLEYİCİLİ KAVANOZ İÇİ --- */
+        /* --- 5. ŞİFRE & DİNAMİK YILDIZ YERLEŞİMİ (KAVANOZ İÇİ) --- */
         const SAHRA_SIFRE = "sahra123";
 
         function openJarModal() {
@@ -895,17 +928,20 @@
             }
         }
 
-        /* YILDIZLARIN ÜST ÜSTE BİNMESİNİ ÖNLEYEN YENİ GELİŞMİŞ FONKSİYON */
+        /* YILDIZLARIN YAZI VE KANVAS ALANINDA ÇAKIŞMADAN DİZİLMESİ */
         function openInsideJarView() {
             const insideView = document.getElementById('insideJarView');
             const starsContainer = document.getElementById('starsContainer');
             starsContainer.innerHTML = '';
 
-            const placedPositions = []; // Yerleşen yıldızların koordinat geçmişi
-            const minDistance = 80;     // Yıldızlar arası piksel cinsinden güvenli mesafe
+            const placedPositions = [];
+            const minDistance = 85; 
 
             const containerWidth = starsContainer.clientWidth || window.innerWidth;
-            const containerHeight = starsContainer.clientHeight || (window.innerHeight * 0.7);
+            
+            // Yıldız sayısına göre dinamik yükseklik hesabı (Yıldız çoksa alanı uzatır)
+            const calculatedHeight = Math.max(window.innerHeight * 1.2, globalNotes.length * 75);
+            starsContainer.style.minHeight = `${calculatedHeight}px`;
 
             globalNotes.forEach(notData => {
                 const starEl = document.createElement('div');
@@ -915,22 +951,20 @@
                 let overlap = true;
                 let attempts = 0;
 
-                // Çakışmayan boş bir alan bulana kadar deneme yap
-                while (overlap && attempts < 100) {
+                while (overlap && attempts < 120) {
                     attempts++;
-                    const percentX = Math.floor(Math.random() * 70) + 10; // %10 - %80 arası
-                    const percentY = Math.floor(Math.random() * 55) + 15; // %15 - %70 arası
+                    const percentX = Math.floor(Math.random() * 75) + 10; // %10 - %85 arası
+                    const percentY = Math.floor(Math.random() * 80) + 5;  // %5 - %85 arası
 
                     const posX = (percentX / 100) * containerWidth;
-                    const posY = (percentY / 100) * containerHeight;
+                    const posY = (percentY / 100) * calculatedHeight;
 
-                    // Mevcut tüm yıldızlar ile olan uzaklığı ölç
                     overlap = placedPositions.some(pos => {
                         const distance = Math.hypot(pos.x - posX, pos.y - posY);
                         return distance < minDistance;
                     });
 
-                    if (!overlap || attempts === 100) {
+                    if (!overlap || attempts === 120) {
                         randomX = percentX;
                         randomY = percentY;
                         placedPositions.push({ x: posX, y: posY });
@@ -949,6 +983,7 @@
                 starsContainer.appendChild(starEl);
             });
 
+            insideView.scrollTop = 0;
             insideView.classList.add('active');
         }
 
