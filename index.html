@@ -242,7 +242,7 @@
         .delete-star-btn:hover { background: #dc2626; transform: scale(1.2); }
 
         /* ==========================================================================
-           6. FORM OVERLAY & TEMATİK NOT OKUMA
+           6. FORM OVERLAY & TEMATİK NOT OKUMA (YENİLENMİŞ SCROLL DÜZENİ)
            ========================================================================== */
         .zoom-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -308,78 +308,85 @@
             cursor: pointer; z-index: 360; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
 
-        /* OKUMA KARTI DÜZENİ */
+        /* DÜZELTİLMİŞ YILDIZ OKUMA KARTI DÜZENİ */
         .note-card {
             width: 100%; 
-            max-width: 580px; 
-            max-height: 85vh;
+            max-width: 540px; 
+            max-height: 82vh;
             border-radius: 20px; 
-            padding: 25px 20px;
+            padding: 25px 15px 25px 25px;
             display: flex; 
             flex-direction: column; 
             align-items: center; 
-            justify-content: flex-start;
             text-align: center; 
             box-shadow: 0 20px 60px rgba(0,0,0,0.8);
-            gap: 10px;
             overflow: hidden;
         }
 
         .avatar-box {
-            width: 75px; 
-            height: 75px; 
+            width: 70px; 
+            height: 70px; 
             border-radius: 50%; 
             border: 4px solid #fff;
             display: flex; 
             justify-content: center; 
             align-items: center; 
-            font-size: 2.2rem; 
+            font-size: 2rem; 
             flex-shrink: 0;
+            margin-bottom: 6px;
         }
 
         .note-author {
             font-size: 1.3rem;
             font-weight: bold;
             flex-shrink: 0;
+            margin-bottom: 12px;
         }
 
-        /* MESAJ METNİ VE İÇ KAYDIRMA (SCROLLBAR) */
+        /* METİN VE RESMİ BİRLİKTE KAYDIRAN KAPSAYICI (SCROLLABLE WRAPPER) */
+        .note-scroll-content {
+            width: 100%;
+            overflow-y: auto;
+            padding-right: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        /* Özel Kaydırma Çubuğu Stili */
+        .note-scroll-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        .note-scroll-content::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 4px;
+        }
+
         .note-body {
             font-size: 1.05rem;
             line-height: 1.6;
             width: 100%;
-            max-height: 220px;
-            overflow-y: auto;
-            padding: 0 10px;
             word-break: break-word;
+            white-space: pre-wrap; /* Paragraf girintilerini korur */
         }
 
-        .note-body::-webkit-scrollbar {
-            width: 6px;
-        }
-        .note-body::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.4);
-            border-radius: 3px;
-        }
-
-        /* GÖRSEL ALANI VE SIKIŞMAYI ÖNLEYEN YAPI */
+        /* GÖRSEL ALANI (METNİN ALTINDA TAM VE EKSİKSİZ GÖRÜNÜR) */
         .note-image-container {
             width: 100%;
-            max-width: 300px;
-            max-height: 180px;
-            border-radius: 12px;
+            max-width: 380px;
+            border-radius: 14px;
             overflow: hidden;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-            border: 3px solid rgba(255,255,255,0.6);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            border: 3px solid rgba(255,255,255,0.7);
             display: none;
             flex-shrink: 0;
-            margin-top: 5px;
+            margin-bottom: 10px;
         }
 
         .note-image-container img {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            height: auto;
             display: block;
         }
 
@@ -387,7 +394,7 @@
         .theme-stardew { background: #f1d399; border: 6px solid #f3bc64; outline: 6px solid #4a2a06; font-family: 'VT323', monospace; color: #4a2a06; }
         .theme-mlp { background: linear-gradient(135deg, #f472b6, #c084fc, #38bdf8); border: 6px solid #fff; color: #fff; }
         .theme-art { background: #fff8f0; border: 8px solid #d97706; font-family: 'Caveat', cursive; color: #1f2937; }
-        .theme-classroom { background: #fff; border-left: 12px solid #ef4444; font-family: 'Caveat', cursive; color: #1e3a8a; text-align: left; align-items: flex-start; padding-left: 30px; }
+        .theme-classroom { background: #fff; border-left: 12px solid #ef4444; font-family: 'Caveat', cursive; color: #1e3a8a; text-align: left; align-items: flex-start; padding-left: 20px; }
 
         /* MANTAR PANO */
         .corkboard-section {
@@ -603,10 +610,13 @@
         <div class="note-card" id="noteCard">
             <div class="avatar-box" id="noteAvatar">👤</div>
             <div class="note-author" id="noteAuthor">İsim</div>
-            <div class="note-body" id="noteBody">Mesaj...</div>
             
-            <div class="note-image-container" id="noteImgBox">
-                <img id="noteImg" src="" alt="Yıldız Fotoğrafı">
+            <div class="note-scroll-content">
+                <div class="note-body" id="noteBody">Mesaj...</div>
+                
+                <div class="note-image-container" id="noteImgBox">
+                    <img id="noteImg" src="" alt="Yıldız Fotoğrafı">
+                </div>
             </div>
         </div>
     </div>
@@ -927,6 +937,10 @@
                 imgBox.style.display = 'none';
                 imgEl.src = '';
             }
+
+            // Modal açıldığında kaydırma alanını en üste al
+            const scrollArea = noteCard.querySelector('.note-scroll-content');
+            if (scrollArea) scrollArea.scrollTop = 0;
 
             noteModal.classList.add('active');
         }
